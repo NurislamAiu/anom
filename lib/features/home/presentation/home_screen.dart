@@ -15,6 +15,13 @@ class HomeScreen extends StatelessWidget {
         title: const Text('Home'),
         actions: [
           IconButton(
+            icon: const Icon(Icons.search),
+            tooltip: 'Logout',
+            onPressed: () async {
+              context.go('/search');
+            },
+          ),
+          IconButton(
             icon: const Icon(Icons.logout),
             tooltip: 'Logout',
             onPressed: () async {

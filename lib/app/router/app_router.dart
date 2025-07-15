@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../features/auth/presentation/login_screen.dart';
 import '../../features/auth/presentation/register_screen.dart';
 import '../../features/home/presentation/home_screen.dart';
+import '../../features/search/presentation/search_screen.dart';
 import '../../providers/auth_provider.dart';
 
 class AppRouter {
@@ -35,6 +36,10 @@ class AppRouter {
         GoRoute(
           path: '/home',
           builder: (context, state) => const HomeScreen(),
+        ),
+        GoRoute(
+          path: '/search',
+          builder: (context, state) => const SearchScreen(),
         ),
       ],
     );
