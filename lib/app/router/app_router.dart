@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../features/auth/presentation/login_screen.dart';
 import '../../features/auth/presentation/register_screen.dart';
+import '../../features/chat/presentation/chat_screen.dart';
 import '../../features/home/presentation/home_screen.dart';
 import '../../features/search/presentation/search_screen.dart';
 import '../../providers/auth_provider.dart';
@@ -40,6 +41,14 @@ class AppRouter {
         GoRoute(
           path: '/search',
           builder: (context, state) => const SearchScreen(),
+        ),
+        GoRoute(
+          path: '/chat/:chatId',
+          name: 'chat',
+          builder: (context, state) {
+            final chatId = state.pathParameters['chatId']!;
+            return ChatScreen(chatId: chatId);
+          },
         ),
       ],
     );

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../providers/search_provider.dart';
+import '../../../../providers/auth_provider.dart';
+import '../../chat/data/chat_service.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -11,11 +14,12 @@ class SearchScreen extends StatefulWidget {
 
 class _SearchScreenState extends State<SearchScreen> {
   final controller = TextEditingController();
+  final _chatService = ChatService();
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.watch<SearchProvider>();
-    final results = provider.results;
+    final search = context.watch<SearchProvider>();
+    final currentUser = context.read<AuthProvider>().username ?? 'guest';
 
     return Scaffold(
       appBar: AppBar(title: const Text('Search Users')),
@@ -36,21 +40,28 @@ class _SearchScreenState extends State<SearchScreen> {
               ),
             ),
             const SizedBox(height: 16),
-            if (results.isEmpty)
+            if (search.results.isEmpty)
               const Text('No users found')
             else
               Expanded(
                 child: ListView.builder(
-                  itemCount: results.length,
+                  itemCount: search.results.length,
                   itemBuilder: (_, i) {
-                    final user = results[i];
+                    final user = search.results[i];
+                    if (user.username == currentUser) return const SizedBox.shrink();
+
                     return ListTile(
                       title: Text(user.username),
-                      onTap: () {
-                        // TODO: начать чат
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Selected: ${user.username}')),
-                        );
+                      onTap: () async {
+                        final otherUser = user.username;
+                        final chatId = _chatService.getChatId(currentUser, otherUser);
+                        final exists = await _chatService.chatExists(chatId);
+
+                        if (!exists) {
+                          await _chatService.createChat(chatId, [currentUser, otherUser]);
+                        }
+
+                        context.go('/chat/$chatId');
                       },
                     );
                   },
