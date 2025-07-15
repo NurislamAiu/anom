@@ -36,10 +36,9 @@ class _HomeScreenState extends State<HomeScreen> {
             onPressed: () => context.go('/search'),
           ),
           IconButton(
-            icon: const Icon(Icons.logout),
+            icon: const Icon(Icons.person),
             onPressed: () {
-              context.read<AuthProvider>().logout();
-              context.go('/login');
+              context.go('/profile');
             },
           ),
         ],

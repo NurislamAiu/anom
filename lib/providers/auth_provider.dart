@@ -46,6 +46,18 @@ class AuthProvider extends ChangeNotifier {
     return null;
   }
 
+  Future<bool> changePassword(String current, String newPassword) async {
+    final user = await _authService.getUser(_username!);
+    if (user == null) return false;
+
+    final currentHash = _authService.hashPassword(current);
+    if (user.passwordHash != currentHash) return false;
+
+    final newHash = _authService.hashPassword(newPassword);
+    await _authService.updateUserPassword(_username!, newHash);
+    return true;
+  }
+
   Future<void> logout() async {
     await _storage.delete(key: _key);
     _isLoggedIn = false;

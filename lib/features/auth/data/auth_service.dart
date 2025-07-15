@@ -38,4 +38,17 @@ class AuthService {
       'passwordHash': passwordHash,
     });
   }
+
+  Future<void> updateUserPassword(String username, String newHash) async {
+    final query = await _db
+        .collection('users')
+        .where('username', isEqualTo: username)
+        .get();
+
+    if (query.docs.isNotEmpty) {
+      await query.docs.first.reference.update({
+        'passwordHash': newHash,
+      });
+    }
+  }
 }
