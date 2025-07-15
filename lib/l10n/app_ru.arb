@@ -1,0 +1,9 @@
+{
+  "@@locale": "ru",
+  "profile": "Профиль",
+  "changePassword": "Сменить пароль",
+  "changeLanguage": "Сменить язык",
+  "about": "О нас",
+  "privacy": "Политика конфиденциальности",
+  "logout": "Выйти"
+}

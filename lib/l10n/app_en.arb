@@ -1,0 +1,9 @@
+{
+  "@@locale": "en",
+  "profile": "Profile",
+  "changePassword": "Change Password",
+  "changeLanguage": "Change Language",
+  "about": "About Us",
+  "privacy": "Privacy Policy",
+  "logout": "Logout"
+}

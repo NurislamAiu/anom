@@ -8,6 +8,14 @@ class AuthProvider extends ChangeNotifier {
   final _storage = const FlutterSecureStorage();
   final _authService = AuthService();
 
+  String _locale = 'en';
+  String get locale => _locale;
+
+  void setLocale(String langCode) {
+    _locale = langCode;
+    notifyListeners();
+  }
+
   bool _isLoggedIn = false;
   bool get isLoggedIn => _isLoggedIn;
 
