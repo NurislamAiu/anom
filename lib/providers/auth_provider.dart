@@ -1,34 +1,55 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import '../features/auth/data/auth_service.dart';
+import '../features/auth/domain/user_model.dart';
 
 class AuthProvider extends ChangeNotifier {
   static const _key = 'session_token';
-  final FlutterSecureStorage _storage = const FlutterSecureStorage();
+  final _storage = const FlutterSecureStorage();
+  final _authService = AuthService();
 
   bool _isLoggedIn = false;
   bool get isLoggedIn => _isLoggedIn;
 
+  String? _username;
+  String? get username => _username;
 
   Future<void> loadSession() async {
     final token = await _storage.read(key: _key);
-    _isLoggedIn = token != null;
-    debugPrint('[AuthProvider] Loaded session: $_isLoggedIn');
-    notifyListeners();
+    if (token != null) {
+      _isLoggedIn = true;
+      _username = token;
+      notifyListeners();
+    }
   }
 
-  Future<void> login(String username, String password) async {
+  Future<bool> login(String username, String password) async {
+    final user = await _authService.getUser(username);
+    if (user == null) return false;
 
-    await _storage.write(key: _key, value: 'mock_token');
-    _isLoggedIn = true;
-    debugPrint('[AuthProvider] Logged in');
-    notifyListeners();
+    final hashedInput = _authService.hashPassword(password);
+    if (hashedInput == user.passwordHash) {
+      _isLoggedIn = true;
+      _username = username;
+      await _storage.write(key: _key, value: username);
+      notifyListeners();
+      return true;
+    }
+    return false;
   }
 
+  Future<String?> register(String username, String password) async {
+    final taken = await _authService.isUsernameTaken(username);
+    if (taken) return 'Username already taken';
+
+    await _authService.registerUser(username, password);
+    return null;
+  }
 
   Future<void> logout() async {
     await _storage.delete(key: _key);
     _isLoggedIn = false;
-    debugPrint('[AuthProvider] Logged out');
+    _username = null;
     notifyListeners();
   }
 }
