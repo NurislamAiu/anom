@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../providers/chat_provider.dart';
@@ -7,6 +8,7 @@ import '../../../../providers/auth_provider.dart';
 
 class ChatScreen extends StatefulWidget {
   final String chatId;
+
   const ChatScreen({super.key, required this.chatId});
 
   @override
@@ -35,9 +37,32 @@ class _ChatScreenState extends State<ChatScreen> {
     final chatProvider = context.watch<ChatProvider>();
     final currentUser = context.read<AuthProvider>().username ?? 'unknown';
     final messages = chatProvider.messages;
+    final otherUser = widget.chatId.split('_').firstWhere((u) => u != currentUser);
 
     return Scaffold(
-      appBar: AppBar(title: Text('Chat with: ${widget.chatId}')),
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        foregroundColor: Colors.white,
+        title: Row(
+          children: [
+            const CircleAvatar(
+              radius: 16,
+              backgroundColor: Colors.white12,
+              child: Icon(Icons.person, color: Colors.white, size: 18),
+            ),
+            const SizedBox(width: 8),
+            Text(
+              otherUser,
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+            ),
+          ],
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new),
+          onPressed: () => context.go('/home'),
+        ),
+      ),
       body: Column(
         children: [
           Expanded(
@@ -46,26 +71,30 @@ class _ChatScreenState extends State<ChatScreen> {
               reverse: true,
               itemCount: messages.length,
               itemBuilder: (context, index) {
-                final msg = messages[messages.length - 1 - index]; // newest at bottom
+                final msg = messages[messages.length - 1 - index];
                 final isMe = msg.sender == currentUser;
 
                 return Align(
-                  alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
+                  alignment:
+                  isMe ? Alignment.centerRight : Alignment.centerLeft,
                   child: Container(
-                    margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                    margin: const EdgeInsets.symmetric(
+                        vertical: 4, horizontal: 10),
                     padding: const EdgeInsets.all(12),
+                    constraints: const BoxConstraints(maxWidth: 300),
                     decoration: BoxDecoration(
-                      color: isMe ? Colors.blueAccent : Colors.grey[300],
-                      borderRadius: BorderRadius.circular(12),
+                      color: isMe ? Colors.white : Colors.grey[900],
+                      borderRadius: BorderRadius.circular(16),
                     ),
                     child: Column(
-                      crossAxisAlignment:
-                      isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                      crossAxisAlignment: isMe
+                          ? CrossAxisAlignment.end
+                          : CrossAxisAlignment.start,
                       children: [
                         Text(
                           msg.text,
                           style: TextStyle(
-                            color: isMe ? Colors.white : Colors.black,
+                            color: isMe ? Colors.black : Colors.white,
                             fontSize: 16,
                           ),
                         ),
@@ -73,8 +102,10 @@ class _ChatScreenState extends State<ChatScreen> {
                         Text(
                           DateFormat.Hm().format(msg.timestamp),
                           style: TextStyle(
-                            fontSize: 12,
-                            color: isMe ? Colors.white70 : Colors.grey[600],
+                            fontSize: 11,
+                            color: isMe
+                                ? Colors.grey[600]
+                                : Colors.grey[400],
                           ),
                         ),
                       ],
@@ -84,23 +115,45 @@ class _ChatScreenState extends State<ChatScreen> {
               },
             ),
           ),
-          const Divider(height: 1),
+          const Divider(height: 1, color: Colors.white12),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
             child: Row(
               children: [
-                Expanded(
-                  child: TextField(
-                    controller: controller,
-                    decoration: const InputDecoration(
-                      hintText: 'Type a message...',
-                      border: InputBorder.none,
-                    ),
-                    onSubmitted: (_) => _sendMessage(currentUser),
-                  ),
+                IconButton(
+                  icon: const Icon(Icons.photo, color: Colors.white70),
+                  onPressed: () {
+                    // TODO: добавить отправку фото
+                  },
                 ),
                 IconButton(
-                  icon: const Icon(Icons.send),
+                  icon: const Icon(Icons.videocam, color: Colors.white70),
+                  onPressed: () {
+                    // TODO: добавить отправку видео
+                  },
+                ),
+                Expanded(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.white24),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: TextField(
+                      controller: controller,
+                      style: const TextStyle(color: Colors.white),
+                      decoration: const InputDecoration(
+                        hintText: 'Type a message...',
+                        hintStyle: TextStyle(color: Colors.white38),
+                        border: InputBorder.none,
+                      ),
+                      onSubmitted: (_) => _sendMessage(currentUser),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 6),
+                IconButton(
+                  icon: const Icon(Icons.send, color: Colors.white),
                   onPressed: () => _sendMessage(currentUser),
                 ),
               ],

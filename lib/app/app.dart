@@ -12,6 +12,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final auth = Provider.of<AuthProvider>(context, listen: true);
+    print('🌍 Locale: ${auth.locale}');
 
     return MaterialApp.router(
       title: 'Secure Chat',

@@ -28,23 +28,31 @@ class _HomeScreenState extends State<HomeScreen> {
     final username = context.read<AuthProvider>().username ?? '';
 
     return Scaffold(
+      backgroundColor: Colors.black,
       appBar: AppBar(
-        title: Text('Chats ($username)'),
+        backgroundColor: Colors.black,
+        title: Text(
+          'ANOM',
+          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.search),
+            icon: const Icon(Icons.search, color: Colors.white),
             onPressed: () => context.go('/search'),
           ),
           IconButton(
-            icon: const Icon(Icons.person),
-            onPressed: () {
-              context.go('/profile');
-            },
+            icon: const Icon(Icons.person_outline, color: Colors.white),
+            onPressed: () => context.go('/profile'),
           ),
         ],
       ),
       body: chats.isEmpty
-          ? const Center(child: Text('No chats yet'))
+          ? const Center(
+        child: Text(
+          '🔒 No secure chats yet',
+          style: TextStyle(color: Colors.grey),
+        ),
+      )
           : ListView.builder(
         itemCount: chats.length,
         itemBuilder: (_, i) {
@@ -54,18 +62,34 @@ class _HomeScreenState extends State<HomeScreen> {
           final lastMessage = chat['lastMessage'] ?? '';
           final updatedAt = chat['updatedAt'] as DateTime?;
 
-          return ListTile(
-            title: Text(chatWith),
-            subtitle: Text(lastMessage),
-            trailing: Text(
-              updatedAt != null
-                  ? DateFormat.Hm().format(updatedAt)
-                  : '',
-              style: const TextStyle(fontSize: 12),
+          return Container(
+            margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: Colors.grey[900],
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.white10),
             ),
-            onTap: () {
-              context.go('/chat/${chat['chatId']}');
-            },
+            child: ListTile(
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              title: Text(
+                chatWith,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              subtitle: Text(
+                lastMessage,
+                style: const TextStyle(color: Colors.white70),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              trailing: Text(
+                updatedAt != null ? DateFormat.Hm().format(updatedAt) : '',
+                style: const TextStyle(color: Colors.white54, fontSize: 12),
+              ),
+              onTap: () => context.go('/chat/${chat['chatId']}'),
+            ),
           );
         },
       ),
