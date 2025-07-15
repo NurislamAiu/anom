@@ -52,11 +52,18 @@ class _LoginScreenState extends State<LoginScreen> {
               },
               child: const Text('Login'),
             ),
+
             if (error.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.only(top: 16),
                 child: Text(error, style: const TextStyle(color: Colors.red)),
               ),
+            TextButton(
+              onPressed: () {
+                context.go('/register');
+              },
+              child: const Text("Don't have an account? Register"),
+            ),
           ],
         ),
       ),
