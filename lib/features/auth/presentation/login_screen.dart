@@ -25,20 +25,13 @@ class _LoginScreenState extends State<LoginScreen> {
 
     return Scaffold(
       backgroundColor: Colors.black,
-      body: Stack(
-        children: [
-          Positioned(
-            top: 200,
-            left: 0,
-            right: 0,
-            child: Image.asset('assets/logo.png', height: MediaQuery.of(context).size.height * 0.12),
-          ),
-          Center(
+      body: Center(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 32),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  Image.asset('assets/logo.png', height: MediaQuery.of(context).size.height * 0.12),
                   Text(
                     'Welcome Back!',
                     style: TextStyle(
@@ -179,8 +172,6 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
           ),
-        ],
-      ),
     );
   }
 
@@ -203,8 +194,8 @@ class _LoginScreenState extends State<LoginScreen> {
             onPressed: () => Navigator.pop(context),
           ),
           ElevatedButton.icon(
-            icon: const Icon(Icons.email),
-            label: const Text('Contact Support'),
+            icon: const Icon(Icons.email, color: Colors.white,),
+            label: const Text('Contact Support', style: TextStyle(color: Colors.white),),
             style: ElevatedButton.styleFrom(backgroundColor: Colors.blueAccent),
             onPressed: () {
               Navigator.pop(context);
