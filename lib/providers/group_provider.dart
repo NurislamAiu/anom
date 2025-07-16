@@ -39,11 +39,7 @@ class GroupChatProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> deleteGroup(String groupId) async {
-    await _service.deleteGroup(groupId);
-    _groups.removeWhere((g) => g.groupId == groupId);
-    notifyListeners();
-  }
+
 
   Future<void> addMember(String groupId, String username) async {
     await _service.addUserToGroup(groupId, username);
@@ -68,4 +64,11 @@ class GroupChatProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  Future<void> deleteGroup(String groupId) async {
+    await _service.deleteGroupChat(groupId);
+    _groups.removeWhere((g) => g.groupId == groupId);
+    notifyListeners();
+  }
+
 }

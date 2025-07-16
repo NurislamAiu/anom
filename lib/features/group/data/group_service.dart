@@ -84,4 +84,8 @@ class GroupChatService {
       'participants': FieldValue.arrayRemove([username]),
     });
   }
+
+  Future<void> deleteGroupChat(String groupId) async {
+    await _db.collection('groupChats').doc(groupId).delete();
+  }
 }

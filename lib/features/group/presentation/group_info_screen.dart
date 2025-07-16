@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:loading_indicator/loading_indicator.dart';
 import 'package:provider/provider.dart';
 import 'package:iconsax/iconsax.dart';
 import '../../../providers/group_provider.dart';
@@ -82,8 +83,44 @@ class GroupInfoScreen extends StatelessWidget {
               context,
               icon: Iconsax.trash,
               label: 'Удалить группу',
-              onTap: () {
-                _showSnack(context, 'Удаление группы (в разработке)');
+              onTap: () async {
+                final confirm = await showDialog<bool>(
+                  context: context,
+                  builder: (_) => AlertDialog(
+                    backgroundColor: Colors.grey[900],
+                    title: const Text('Удалить группу?', style: TextStyle(color: Colors.white)),
+                    content: const Text('Вы уверены, что хотите удалить эту группу?', style: TextStyle(color: Colors.white70)),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context, false),
+                        child: const Text('Отмена', style: TextStyle(color: Colors.grey)),
+                      ),
+                      TextButton(
+                        onPressed: () => Navigator.pop(context, true),
+                        child: const Text('Удалить', style: TextStyle(color: Colors.redAccent)),
+                      ),
+                    ],
+                  ),
+                );
+
+                if (confirm == true) {
+                  showDialog(
+                    context: context,
+                    barrierDismissible: false,
+                    builder: (_) => Dialog(
+                      backgroundColor: Colors.transparent,
+                      elevation: 0,
+                      child: buildLoadingIndicator(),
+                    ),
+                  );
+
+                  await context.read<GroupChatProvider>().deleteGroup(groupId);
+
+                  if (context.mounted) {
+                    Navigator.pop(context);
+                    context.go('/home');
+                  }
+                }
               },
             ),
             _buildActionTile(
@@ -153,6 +190,21 @@ class GroupInfoScreen extends StatelessWidget {
         content: Text(message),
         backgroundColor: Colors.grey[850],
         behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
+
+  Widget buildLoadingIndicator() {
+    return Center(
+      child: SizedBox(
+        height: 60,
+        width: 60,
+        child: const LoadingIndicator(
+          indicatorType: Indicator.ballSpinFadeLoader,
+          colors: [Colors.white],
+          strokeWidth: 2,
+          backgroundColor: Colors.transparent,
+        ),
       ),
     );
   }
