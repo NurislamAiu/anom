@@ -44,4 +44,28 @@ class GroupChatProvider extends ChangeNotifier {
     _groups.removeWhere((g) => g.groupId == groupId);
     notifyListeners();
   }
+
+  Future<void> addMember(String groupId, String username) async {
+    await _service.addUserToGroup(groupId, username);
+
+    final groupIndex = _groups.indexWhere((g) => g.groupId == groupId);
+    if (groupIndex != -1) {
+      _groups[groupIndex].participants.add(username);
+      notifyListeners();
+    }
+  }
+
+  Future<String?> findUserId(String username) {
+    return _service.getUserIdByUsername(username);
+  }
+
+  Future<void> removeMember(String groupId, String username) async {
+    await _service.removeUserFromGroup(groupId, username);
+
+    final groupIndex = _groups.indexWhere((g) => g.groupId == groupId);
+    if (groupIndex != -1) {
+      _groups[groupIndex].participants.remove(username);
+      notifyListeners();
+    }
+  }
 }

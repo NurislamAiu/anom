@@ -58,4 +58,30 @@ class GroupChatService {
 
     await _db.collection('groupChats').doc(groupId).delete();
   }
+
+  Future<void> addUserToGroup(String groupId, String username) async {
+    final groupRef = FirebaseFirestore.instance.collection('groupChats').doc(groupId);
+    await groupRef.update({
+      'participants': FieldValue.arrayUnion([username])
+    });
+  }
+
+  Future<String?> getUserIdByUsername(String username) async {
+    final query = await FirebaseFirestore.instance
+        .collection('users')
+        .where('username', isEqualTo: username)
+        .limit(1)
+        .get();
+
+    if (query.docs.isEmpty) return null;
+
+    return query.docs.first.id;
+  }
+
+  Future<void> removeUserFromGroup(String groupId, String username) async {
+    final docRef = _db.collection('groupChats').doc(groupId);
+    await docRef.update({
+      'participants': FieldValue.arrayRemove([username]),
+    });
+  }
 }

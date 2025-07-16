@@ -63,7 +63,7 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
       backgroundColor: Colors.black,
       appBar: AppBar(
         title: GestureDetector(
-          onTap: () => context.go('/group_info/${widget.groupId}'),
+          onTap: () => context.push('/group_info/${widget.groupId}'),
           child: Text(
             context
                     .read<GroupChatProvider>()

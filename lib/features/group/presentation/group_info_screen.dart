@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:iconsax/iconsax.dart';
 import '../../../providers/group_provider.dart';
+import 'add_group_members_screen.dart';
 
 class GroupInfoScreen extends StatelessWidget {
   final String groupId;
@@ -42,7 +44,7 @@ class GroupInfoScreen extends StatelessWidget {
                 shape: BoxShape.circle,
                 border: Border.all(color: Colors.white24, width: 2),
                 image: const DecorationImage(
-                  image: AssetImage('assets/group_placeholder.png'),
+                  image: AssetImage('assets/icon.png'),
                   fit: BoxFit.cover,
                 ),
               ),
@@ -73,7 +75,7 @@ class GroupInfoScreen extends StatelessWidget {
               icon: Iconsax.user_add,
               label: 'Добавить участников',
               onTap: () {
-                _showSnack(context, 'Добавление участников (в разработке)');
+                context.push('/group_add/${group.groupId}');
               },
             ),
             _buildActionTile(
