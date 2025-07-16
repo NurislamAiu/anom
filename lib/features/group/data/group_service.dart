@@ -1,0 +1,61 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+import '../domain/group_chat_model.dart';
+import '../domain/group_message_model.dart';
+
+class GroupChatService {
+  final _db = FirebaseFirestore.instance;
+
+  Future<void> createGroupChat(GroupChat group) async {
+    await _db.collection('groupChats').doc(group.groupId).set(group.toJson());
+  }
+
+  Future<void> sendGroupMessage(String groupId, GroupMessage message) async {
+    await _db
+        .collection('groupChats')
+        .doc(groupId)
+        .collection('messages')
+        .add(message.toJson());
+
+    await _db.collection('groupChats').doc(groupId).update({
+      'lastMessage': message.text,
+      'updatedAt': FieldValue.serverTimestamp(),
+    });
+  }
+
+  Stream<List<GroupMessage>> getGroupMessages(String groupId) {
+    return _db
+        .collection('groupChats')
+        .doc(groupId)
+        .collection('messages')
+        .orderBy('timestamp', descending: true)
+        .snapshots()
+        .map((snapshot) =>
+        snapshot.docs.map((doc) => GroupMessage.fromJson(doc.data())).toList());
+  }
+
+  Future<List<GroupChat>> getUserGroups(String username) async {
+    final snapshot = await _db
+        .collection('groupChats')
+        .where('participants', arrayContains: username)
+        .get();
+
+    return snapshot.docs
+        .map((doc) => GroupChat.fromJson(doc.data()))
+        .toList();
+  }
+
+  Future<void> deleteGroup(String groupId) async {
+    final messages = await _db
+        .collection('groupChats')
+        .doc(groupId)
+        .collection('messages')
+        .get();
+
+    for (var doc in messages.docs) {
+      await doc.reference.delete();
+    }
+
+    await _db.collection('groupChats').doc(groupId).delete();
+  }
+}

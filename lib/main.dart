@@ -1,5 +1,6 @@
 import 'package:anom/providers/block_provider.dart';
 import 'package:anom/providers/chat_provider.dart';
+import 'package:anom/providers/group_provider.dart';
 import 'package:anom/providers/profile_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -38,6 +39,9 @@ void main() async {
             if (username == null || username.isEmpty) return previous!;
             return BlockProvider(username);
           },
+        ),
+        ChangeNotifierProvider<GroupChatProvider>(
+          create: (_) => GroupChatProvider(),
         ),
       ],
       child: MyApp(showOnboarding: !seenOnboarding),

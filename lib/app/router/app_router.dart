@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../features/auth/presentation/login_screen.dart';
 import '../../features/auth/presentation/register_screen.dart';
 import '../../features/chat/presentation/chat_screen.dart';
+import '../../features/group/presentation/group_screen.dart';
 import '../../features/home/presentation/home_screen.dart';
 import '../../features/onboarding/onboarding_screen.dart';
 import '../../features/profile/presentation/profile_screen.dart';
@@ -67,6 +68,13 @@ class AppRouter {
           builder: (context, state) {
             final chatId = state.pathParameters['chatId']!;
             return ChatScreen(chatId: chatId);
+          },
+        ),
+        GoRoute(
+          path: '/group/:groupId',
+          builder: (context, state) {
+            final groupId = state.pathParameters['groupId']!;
+            return GroupChatScreen(groupId: groupId);
           },
         ),
       ],
