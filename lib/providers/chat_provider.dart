@@ -46,4 +46,20 @@ class ChatProvider extends ChangeNotifier {
     _userChats = await _chatService.getUserChats(username);
     notifyListeners();
   }
+
+  Future<void> deleteChat(String chatId) async {
+    await _chatService.deleteChat(chatId);
+    _userChats.removeWhere((chat) => chat['chatId'] == chatId);
+    notifyListeners();
+  }
+
+  Future<void> updateEncryption(String chatId, String algorithm) async {
+    await _chatService.updateEncryption(chatId, algorithm);
+
+    final index = _userChats.indexWhere((chat) => chat['chatId'] == chatId);
+    if (index != -1) {
+      _userChats[index]['encryption'] = algorithm;
+      notifyListeners();
+    }
+  }
 }

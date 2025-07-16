@@ -66,4 +66,20 @@ class ChatService {
       };
     }).toList();
   }
+
+  Future<void> deleteChat(String chatId) async {
+    final messagesRef = _db.collection('messages').doc(chatId).collection(chatId);
+    final messagesSnapshot = await messagesRef.get();
+    for (final doc in messagesSnapshot.docs) {
+      await doc.reference.delete();
+    }
+
+    await _db.collection('chats').doc(chatId).delete();
+  }
+
+  Future<void> updateEncryption(String chatId, String algorithm) async {
+    await _db.collection('chats').doc(chatId).update({
+      'encryption': algorithm,
+    });
+  }
 }
