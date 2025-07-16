@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 
 import '../../../../providers/chat_provider.dart';
 import '../../../../providers/auth_provider.dart';
+import '../../../providers/block_provider.dart';
 
 class ChatScreen extends StatefulWidget {
   final String chatId;
@@ -39,6 +40,8 @@ class _ChatScreenState extends State<ChatScreen> {
     final currentUser = context.read<AuthProvider>().username ?? 'unknown';
     final messages = chatProvider.messages;
     final otherUser = widget.chatId.split('_').firstWhere((u) => u != currentUser);
+    final blockProvider = context.watch<BlockProvider>();
+    final isBlocked = blockProvider.isBlocked(otherUser);
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -69,65 +72,98 @@ class _ChatScreenState extends State<ChatScreen> {
         actions: [
           IconButton(
             onPressed: () {
-              // Звонок
+              // TODO: Звонок
             },
             icon: const Icon(Iconsax.call, color: Colors.white70),
           ),
-          PopupMenuButton<String>(
-            color: Colors.grey[900],
-            icon: const Icon(Icons.more_vert_outlined, color: Colors.white70),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            onSelected: (value) {
-              switch (value) {
-                case 'block':
-                  _showActionSnack(context, 'Контакт заблокирован');
-                  break;
-                case 'delete':
-                  _showActionSnack(context, 'Чат удалён');
-                  break;
-                case 'decrypt':
-                  _showActionSnack(context, 'Расшифровка обновлена');
-                  break;
-                case 'pin':
-                  _showActionSnack(context, 'Чат закреплён');
-                  break;
-              }
+          Consumer<BlockProvider>(
+            builder: (context, block, _) {
+              final otherUser = widget.chatId.split('_').firstWhere(
+                    (u) => u != context.read<AuthProvider>().username,
+              );
+              final isBlocked = block.isBlocked(otherUser);
+
+              return PopupMenuButton<String>(
+                color: Colors.grey[900],
+                icon: const Icon(Icons.more_vert_outlined, color: Colors.white70),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                onSelected: (value) async {
+                  switch (value) {
+                    case 'block':
+                      await block.blockUser(otherUser);
+                      _showActionSnack(context, 'Контакт заблокирован');
+                      break;
+                    case 'unblock':
+                      await block.unblockUser(otherUser);
+                      _showActionSnack(context, 'Контакт разблокирован');
+                      break;
+                    case 'delete':
+                      _showActionSnack(context, 'Чат удалён');
+                      // TODO: Добавить удаление чата из Firestore
+                      break;
+                    case 'decrypt':
+                      _showActionSnack(context, 'Расшифровка обновлена');
+                      // TODO: Показать диалог выбора алгоритма
+                      break;
+                    case 'pin':
+                      _showActionSnack(context, 'Чат закреплён');
+                      // TODO: Логика закрепления
+                      break;
+                  }
+                },
+                itemBuilder: (context) => [
+                  PopupMenuItem(
+                    value: isBlocked ? 'unblock' : 'block',
+                    child: Text(
+                      isBlocked ? 'Разблокировать контакт' : 'Заблокировать контакт',
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  ),
+                  const PopupMenuItem(
+                    value: 'delete',
+                    child: Text(
+                      'Удалить чат',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                  const PopupMenuItem(
+                    value: 'decrypt',
+                    child: Text(
+                      'Изменить расшифровку',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                  const PopupMenuItem(
+                    value: 'pin',
+                    child: Text(
+                      'Закрепить чат',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ],
+              );
             },
-            itemBuilder: (context) => [
-              const PopupMenuItem(
-                value: 'block',
-                child: Text(
-                  'Заблокировать контакт',
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
-              const PopupMenuItem(
-                value: 'delete',
-                child: Text(
-                  'Удалить чат',
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
-              const PopupMenuItem(
-                value: 'decrypt',
-                child: Text(
-                  'Изменить расшифровку',
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
-              const PopupMenuItem(
-                value: 'pin',
-                child: Text(
-                  'Закрепить чат',
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
-            ],
           ),
         ],
       ),
       body: Column(
         children: [
+          if (isBlocked)
+            Container(
+              color: Colors.red.withOpacity(0.1),
+              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: const [
+                  Icon(Icons.block, color: Colors.redAccent, size: 18),
+                  SizedBox(width: 8),
+                  Text(
+                    'Контакт заблокирован',
+                    style: TextStyle(color: Colors.redAccent, fontSize: 14),
+                  ),
+                ],
+              ),
+            ),
           Expanded(
             child: ListView.builder(
               controller: scrollController,
@@ -138,11 +174,9 @@ class _ChatScreenState extends State<ChatScreen> {
                 final isMe = msg.sender == currentUser;
 
                 return Align(
-                  alignment:
-                  isMe ? Alignment.centerRight : Alignment.centerLeft,
+                  alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
                   child: Container(
-                    margin: const EdgeInsets.symmetric(
-                        vertical: 4, horizontal: 10),
+                    margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 10),
                     padding: const EdgeInsets.all(12),
                     constraints: const BoxConstraints(maxWidth: 300),
                     decoration: BoxDecoration(
@@ -166,9 +200,7 @@ class _ChatScreenState extends State<ChatScreen> {
                           DateFormat.Hm().format(msg.timestamp),
                           style: TextStyle(
                             fontSize: 11,
-                            color: isMe
-                                ? Colors.grey[600]
-                                : Colors.grey[400],
+                            color: isMe ? Colors.grey[600] : Colors.grey[400],
                           ),
                         ),
                       ],
@@ -179,49 +211,52 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
           ),
           const Divider(height: 1, color: Colors.white12),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-            child: Row(
-              children: [
-                IconButton(
-                  icon: Icon(Iconsax.health, color: Colors.white70),
-                  onPressed: () {
-                    // TODO: добавить отправку фото
-                  },
-                ),
-                IconButton(
-                  icon: const Icon(Iconsax.video, color: Colors.white70),
-                  onPressed: () {
-                    // TODO: добавить отправку видео
-                  },
-                ),
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.white24),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: TextField(
-                      controller: controller,
-                      style: const TextStyle(color: Colors.white),
-                      decoration: const InputDecoration(
-                        hintText: 'Type a message...',
-                        hintStyle: TextStyle(color: Colors.white38),
-                        border: InputBorder.none,
+
+          // Поле ввода сообщений:
+          if (!isBlocked)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              child: Row(
+                children: [
+                  IconButton(
+                    icon: Icon(Iconsax.health, color: Colors.white70),
+                    onPressed: () {
+                      // TODO: отправка фото
+                    },
+                  ),
+                  IconButton(
+                    icon: const Icon(Iconsax.video, color: Colors.white70),
+                    onPressed: () {
+                      // TODO: отправка видео
+                    },
+                  ),
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.white24),
+                        borderRadius: BorderRadius.circular(20),
                       ),
-                      onSubmitted: (_) => _sendMessage(currentUser),
+                      child: TextField(
+                        controller: controller,
+                        style: const TextStyle(color: Colors.white),
+                        decoration: const InputDecoration(
+                          hintText: 'Type a message...',
+                          hintStyle: TextStyle(color: Colors.white38),
+                          border: InputBorder.none,
+                        ),
+                        onSubmitted: (_) => _sendMessage(currentUser),
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(width: 6),
-                IconButton(
-                  icon: const Icon(Iconsax.send1, color: Colors.white),
-                  onPressed: () => _sendMessage(currentUser),
-                ),
-              ],
+                  const SizedBox(width: 6),
+                  IconButton(
+                    icon: const Icon(Iconsax.send1, color: Colors.white),
+                    onPressed: () => _sendMessage(currentUser),
+                  ),
+                ],
+              ),
             ),
-          ),
         ],
       ),
     );

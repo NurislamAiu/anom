@@ -1,3 +1,4 @@
+import 'package:anom/providers/block_provider.dart';
 import 'package:anom/providers/chat_provider.dart';
 import 'package:anom/providers/profile_provider.dart';
 import 'package:flutter/material.dart';
@@ -25,6 +26,14 @@ void main() async {
         ChangeNotifierProvider<SearchProvider>(create: (_) => SearchProvider()),
         ChangeNotifierProvider<ChatProvider>(create: (_) => ChatProvider()),
         ChangeNotifierProvider<ProfileProvider>(create: (_) => ProfileProvider()),
+        ChangeNotifierProxyProvider<AuthProvider, BlockProvider>(
+          create: (_) => BlockProvider.loading(),
+          update: (_, auth, previous) {
+            final username = auth.username;
+            if (username == null || username.isEmpty) return previous!;
+            return BlockProvider(username);
+          },
+        ),
       ],
       child: const MyApp(),
     ),
