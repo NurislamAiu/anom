@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../../../providers/auth_provider.dart';
@@ -60,7 +62,27 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
-        title: const Text('Групповой чат'),
+        title: GestureDetector(
+          onTap: () => context.go('/group_info/${widget.groupId}'),
+          child: Text(
+            context
+                    .read<GroupChatProvider>()
+                    .groups
+                    .firstWhere((g) => g.groupId == widget.groupId)
+                    .groupName ??
+                'Групповой чат',
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ),
+        leading: IconButton(
+          onPressed: () => context.go('/home'),
+          icon: Icon(Icons.arrow_back_ios),
+        ),
+        actions: [IconButton(onPressed: () {}, icon: Icon(Iconsax.call))],
         backgroundColor: Colors.black,
         foregroundColor: Colors.white,
       ),
@@ -76,17 +98,23 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
                 final isMe = msg.sender == currentUser;
 
                 return Align(
-                  alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
+                  alignment: isMe
+                      ? Alignment.centerRight
+                      : Alignment.centerLeft,
                   child: Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    margin: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
                       color: isMe ? Colors.blueGrey : Colors.grey[800],
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Column(
-                      crossAxisAlignment:
-                      isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                      crossAxisAlignment: isMe
+                          ? CrossAxisAlignment.end
+                          : CrossAxisAlignment.start,
                       children: [
                         Text(
                           msg.sender,
@@ -104,7 +132,10 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
                         const SizedBox(height: 4),
                         Text(
                           DateFormat.Hm().format(msg.timestamp.toDate()),
-                          style: const TextStyle(fontSize: 10, color: Colors.white38),
+                          style: const TextStyle(
+                            fontSize: 10,
+                            color: Colors.white38,
+                          ),
                         ),
                       ],
                     ),
@@ -114,9 +145,34 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.only(
+              left: 8.0,
+              right: 8,
+              top: 8,
+              bottom: 30,
+            ),
             child: Row(
               children: [
+                IconButton(
+                  icon: const Icon(Iconsax.health, color: Colors.white70),
+                  onPressed: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Отправка фото (в разработке)'),
+                      ),
+                    );
+                  },
+                ),
+                IconButton(
+                  icon: const Icon(Iconsax.video, color: Colors.white70),
+                  onPressed: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Отправка видео (в разработке)'),
+                      ),
+                    );
+                  },
+                ),
                 Expanded(
                   child: TextField(
                     controller: _controller,

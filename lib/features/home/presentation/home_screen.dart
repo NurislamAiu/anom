@@ -27,6 +27,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     final username = context.read<AuthProvider>().username;
     if (username != null) {
       context.read<ChatProvider>().loadUserChats(username);
+      context.read<GroupChatProvider>().loadUserGroups(username);
     }
     _tabController = TabController(length: 3, vsync: this);
   }
@@ -234,64 +235,184 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             ),
           ),
 
-          // --- Groups (пока заглушка) ---
-          const Center(
-            child: Text(
-              '👥 Group chats coming soon',
-              style: TextStyle(color: Colors.white54),
-            ),
+          // --- Groups ---
+          Consumer<GroupChatProvider>(
+            builder: (context, groupProvider, _) {
+              final groups = groupProvider.groups;
+              if (groups.isEmpty) {
+                return const Center(
+                  child: Text('👥 Групп ещё нет', style: TextStyle(color: Colors.white54)),
+                );
+              }
+
+              return ListView.builder(
+                itemCount: groups.length,
+                itemBuilder: (_, i) {
+                  final group = groups[i];
+
+                  return GestureDetector(
+                    onTap: () => context.go('/group/${group.groupId}'),
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[900],
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.3),
+                            blurRadius: 6,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: ListTile(
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                        leading: CircleAvatar(
+                          radius: 24,
+                          backgroundColor: Colors.white10,
+                          child: const Icon(Icons.group, color: Colors.white70),
+                        ),
+                        title: Text(
+                          group.groupName,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                        subtitle: Text(
+                          'Участники: ${group.participants.length}',
+                          style: const TextStyle(color: Colors.white60, fontSize: 13),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              );
+            },
           ),
         ],
       ),
     );
   }
 
+
   void _showCreateGroupDialog(BuildContext context) {
     final nameController = TextEditingController();
+    bool isLoading = false;
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: Colors.grey[900],
-        title: const Text('Создать группу', style: TextStyle(color: Colors.white)),
-        content: TextField(
-          controller: nameController,
-          style: const TextStyle(color: Colors.white),
-          decoration: const InputDecoration(
-            hintText: 'Введите название группы',
-            hintStyle: TextStyle(color: Colors.white54),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Отмена', style: TextStyle(color: Colors.grey)),
-          ),
-          TextButton(
-            onPressed: () async {
-              final groupName = nameController.text.trim();
-              if (groupName.isNotEmpty) {
-                final currentUser = context.read<AuthProvider>().username!;
-                final groupId = const Uuid().v4();
-                final newGroup = GroupChat(
-                  groupId: groupId,
-                  groupName: groupName,
-                  participants: [currentUser],
-                  createdAt: Timestamp.now(),
-                );
+      barrierDismissible: false,
+      barrierColor: Colors.black.withOpacity(0.6),
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (ctx, setState) {
+            return Dialog(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+              backgroundColor: const Color(0xFF1E1E1E),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text(
+                      'Создание группы',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    TextField(
+                      controller: nameController,
+                      style: const TextStyle(color: Colors.white),
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Colors.white10,
+                        hintText: 'Название группы',
+                        hintStyle: const TextStyle(color: Colors.white38),
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide.none,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(ctx),
+                          child: const Text('Отмена', style: TextStyle(color: Colors.white60)),
+                        ),
+                        const SizedBox(width: 12),
+                        ElevatedButton(
+                          onPressed: isLoading
+                              ? null
+                              : () async {
+                            final name = nameController.text.trim();
+                            if (name.isEmpty) return;
 
-                await context.read<GroupChatProvider>().createGroup(newGroup);
+                            setState(() => isLoading = true);
 
-                if (context.mounted) {
-                  Navigator.pop(context);
-                  context.go('/group/$groupId');
-                }
-              }
-            },
-            child: const Text('Создать', style: TextStyle(color: Colors.white)),
-          ),
-        ],
-      ),
+                            try {
+                              final currentUser = context.read<AuthProvider>().username!;
+                              final groupId = const Uuid().v4();
+                              final newGroup = GroupChat(
+                                groupId: groupId,
+                                groupName: name,
+                                participants: [currentUser],
+                                createdAt: Timestamp.now(),
+                              );
+
+                              await context.read<GroupChatProvider>().createGroup(newGroup);
+
+                              if (context.mounted) {
+                                Navigator.pop(context);
+                                context.go('/group/$groupId');
+                              }
+                            } catch (_) {
+                              setState(() => isLoading = false);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Ошибка при создании группы'),
+                                  backgroundColor: Colors.redAccent,
+                                ),
+                              );
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            foregroundColor: Colors.black,
+                            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          child: isLoading
+                              ? const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.black,
+                            ),
+                          )
+                              : const Text('Создать'),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 }
