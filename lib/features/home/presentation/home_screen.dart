@@ -112,13 +112,22 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       style: const TextStyle(fontSize: 20, color: Colors.white),
                     ),
                   ),
-                  title: Text(
-                    chatWith,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
+                  title: Row(
+                    children: [
+                      Text(
+                        chatWith,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                      if (chat['pinned'] == true)
+                        const Padding(
+                          padding: EdgeInsets.only(left: 6),
+                          child: Icon(Iconsax.activity, size: 16, color: Colors.white54),
+                        ),
+                    ],
                   ),
                   subtitle: Padding(
                     padding: const EdgeInsets.only(top: 4),

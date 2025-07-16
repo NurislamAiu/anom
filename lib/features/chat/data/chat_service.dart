@@ -30,9 +30,11 @@ class ChatService {
         .collection('messages')
         .orderBy('timestamp', descending: false)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-        .map((doc) => ChatMessage.fromJson(doc.data()))
-        .toList());
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => ChatMessage.fromJson(doc.data()))
+              .toList(),
+        );
   }
 
   Future<void> sendMessage(String chatId, ChatMessage message) async {
@@ -41,45 +43,63 @@ class ChatService {
         .doc(chatId)
         .collection('messages');
 
+
     await messageRef.add(message.toJson());
 
-    await _db.collection('chats').doc(chatId).update({
+
+    await _db.collection('chats').doc(chatId).set({
       'lastMessage': message.text,
       'updatedAt': FieldValue.serverTimestamp(),
-    });
+    }, SetOptions(merge: true));
   }
 
   Future<List<Map<String, dynamic>>> getUserChats(String username) async {
-    final snapshot = await _db
+    final snapshot = await FirebaseFirestore.instance
         .collection('chats')
         .where('participants', arrayContains: username)
-        .orderBy('updatedAt', descending: true)
         .get();
 
     return snapshot.docs.map((doc) {
       final data = doc.data();
       return {
         'chatId': doc.id,
-        'lastMessage': data['lastMessage'] ?? '',
-        'updatedAt': (data['updatedAt'] as Timestamp?)?.toDate(),
+        'lastMessage': data['lastMessage'],
+        'updatedAt': (data['updatedAt'] as Timestamp).toDate(),
+        'pinned': data['pinned'] ?? false,
         'participants': List<String>.from(data['participants'] ?? []),
       };
     }).toList();
   }
 
   Future<void> deleteChat(String chatId) async {
-    final messagesRef = _db.collection('messages').doc(chatId).collection(chatId);
+    final batch = FirebaseFirestore.instance.batch();
+
+    final messagesRef = FirebaseFirestore.instance
+        .collection('messages')
+        .doc(chatId)
+        .collection('messages');
+
     final messagesSnapshot = await messagesRef.get();
     for (final doc in messagesSnapshot.docs) {
-      await doc.reference.delete();
+      batch.delete(doc.reference);
     }
 
-    await _db.collection('chats').doc(chatId).delete();
+    final chatDoc = FirebaseFirestore.instance.collection('chats').doc(chatId);
+    batch.delete(chatDoc);
+
+    final chatMessagesDoc = FirebaseFirestore.instance.collection('messages').doc(chatId);
+    batch.delete(chatMessagesDoc);
+
+    await batch.commit();
   }
 
   Future<void> updateEncryption(String chatId, String algorithm) async {
-    await _db.collection('chats').doc(chatId).update({
-      'encryption': algorithm,
+    await _db.collection('chats').doc(chatId).update({'encryption': algorithm});
+  }
+
+  Future<void> togglePinChat(String chatId, bool pinned) async {
+    await FirebaseFirestore.instance.collection('chats').doc(chatId).update({
+      'pinned': pinned,
     });
   }
 }

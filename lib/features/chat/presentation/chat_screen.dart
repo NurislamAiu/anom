@@ -41,7 +41,9 @@ class _ChatScreenState extends State<ChatScreen> {
     final chatProvider = context.watch<ChatProvider>();
     final currentUser = context.read<AuthProvider>().username ?? 'unknown';
     final messages = chatProvider.messages;
-    final otherUser = widget.chatId.split('_').firstWhere((u) => u != currentUser);
+    final otherUser = widget.chatId
+        .split('_')
+        .firstWhere((u) => u != currentUser);
     final blockProvider = context.watch<BlockProvider>();
     final isBlocked = blockProvider.isBlocked(otherUser);
 
@@ -54,10 +56,16 @@ class _ChatScreenState extends State<ChatScreen> {
           children: [
             GestureDetector(
               onTap: () => _showAvatarDialog(context),
-              child: const CircleAvatar(
+              child: CircleAvatar(
                 radius: 16,
                 backgroundColor: Colors.white12,
-                child: Icon(Icons.person, color: Colors.white, size: 18),
+                child: Text(
+                  otherUser.isNotEmpty ? otherUser[0].toUpperCase() : '?',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
             ),
             const SizedBox(width: 8),
@@ -71,64 +79,156 @@ class _ChatScreenState extends State<ChatScreen> {
           icon: const Icon(Icons.arrow_back_ios_new),
           onPressed: () => context.go('/home'),
         ),
-          actions: [
-            IconButton(
-              onPressed: () {
-                // TODO: Звонок
-              },
-              icon: const Icon(Iconsax.call, color: Colors.white70),
-            ),
-            Consumer2<BlockProvider, ChatProvider>(
-              builder: (context, block, chat, _) {
-                final auth = context.read<AuthProvider>();
-                final otherUser = widget.chatId.split('_').firstWhere(
-                      (u) => u != auth.username,
-                );
-                final isBlocked = block.isBlocked(otherUser);
+        actions: [
+          IconButton(
+            onPressed: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: const Text('Функция в разработке'),
+                  behavior: SnackBarBehavior.floating,
+                  backgroundColor: Colors.grey[850],
+                ),
+              );
+            },
+            icon: const Icon(Iconsax.call, color: Colors.white70),
+          ),
+          Consumer2<BlockProvider, ChatProvider>(
+            builder: (context, block, chat, _) {
+              final auth = context.read<AuthProvider>();
+              final otherUser = widget.chatId
+                  .split('_')
+                  .firstWhere((u) => u != auth.username);
+              final isBlocked = block.isBlocked(otherUser);
 
-                return PopupMenuButton<String>(
-                  color: Colors.grey[900],
-                  icon: const Icon(Icons.more_vert_outlined, color: Colors.white70),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                  onSelected: (value) async {
-                    switch (value) {
-                      case 'block':
-                        await block.blockUser(otherUser);
-                        _showActionSnack(context, 'Контакт заблокирован');
-                        break;
-                      case 'unblock':
-                        await block.unblockUser(otherUser);
-                        _showActionSnack(context, 'Контакт разблокирован');
-                        break;
-                      case 'delete':
-                        final confirm = await showDialog<bool>(
-                          context: context,
-                          builder: (ctx) => AlertDialog(
-                            backgroundColor: Colors.grey[900],
-                            title: const Text('Удалить чат', style: TextStyle(color: Colors.white)),
-                            content: const Text(
-                              'Вы уверены, что хотите удалить этот чат?',
-                              style: TextStyle(color: Colors.white70),
-                            ),
-                            actions: [
-                              TextButton(
-                                onPressed: () => Navigator.pop(ctx, false),
-                                child: const Text('Отмена', style: TextStyle(color: Colors.grey)),
-                              ),
-                              TextButton(
-                                onPressed: () => Navigator.pop(ctx, true),
-                                child: const Text('Удалить', style: TextStyle(color: Colors.redAccent)),
-                              ),
-                            ],
+              return PopupMenuButton<String>(
+                color: Colors.grey[900],
+                icon: const Icon(
+                  Icons.more_vert_outlined,
+                  color: Colors.white70,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                onSelected: (value) async {
+                  switch (value) {
+                    case 'block':
+                      await block.blockUser(otherUser);
+                      _showActionSnack(context, 'Контакт заблокирован');
+                      break;
+                    case 'unblock':
+                      await block.unblockUser(otherUser);
+                      _showActionSnack(context, 'Контакт разблокирован');
+                      break;
+                    case 'delete':
+                      final confirm = await showDialog<bool>(
+                        context: context,
+                        builder: (ctx) => AlertDialog(
+                          backgroundColor: Colors.grey[900],
+                          title: const Text(
+                            'Удалить чат',
+                            style: TextStyle(color: Colors.white),
                           ),
-                        );
+                          content: const Text(
+                            'Вы уверены, что хотите удалить этот чат?',
+                            style: TextStyle(color: Colors.white70),
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(ctx, false),
+                              child: const Text(
+                                'Отмена',
+                                style: TextStyle(color: Colors.grey),
+                              ),
+                            ),
+                            TextButton(
+                              onPressed: () => Navigator.pop(ctx, true),
+                              child: const Text(
+                                'Удалить',
+                                style: TextStyle(color: Colors.redAccent),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
 
-                        if (confirm != true) return;
+                      if (confirm != true) return;
 
+                      showDialog(
+                        context: context,
+                        barrierDismissible: false,
+                        barrierColor: Colors.black.withOpacity(0.5),
+                        builder: (_) => Center(
+                          child: Container(
+                            width: 70,
+                            height: 70,
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: Colors.grey[900],
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: const LoadingIndicator(
+                              indicatorType: Indicator.ballSpinFadeLoader,
+                              colors: [Colors.white],
+                              strokeWidth: 2,
+                            ),
+                          ),
+                        ),
+                      );
+
+                      try {
+                        await chat.deleteChat(widget.chatId);
+                        if (context.mounted) {
+                          Navigator.pop(context);
+                          context.go('/home');
+                        }
+                      } catch (e) {
+                        Navigator.pop(context);
+                        _showActionSnack(context, 'Ошибка при удалении чата');
+                      }
+                      break;
+                    case 'decrypt':
+                      final selected = await showModalBottomSheet<String>(
+                        context: context,
+                        backgroundColor: Colors.grey[900],
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.vertical(
+                            top: Radius.circular(20),
+                          ),
+                        ),
+                        builder: (context) {
+                          final options = ['AES', 'RSA', 'ChaCha20', 'None'];
+                          return Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Padding(
+                                padding: EdgeInsets.symmetric(vertical: 16),
+                                child: Text(
+                                  'Выберите тип расшифровки',
+                                  style: TextStyle(
+                                    color: Colors.white70,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ),
+                              ...options.map(
+                                (algo) => ListTile(
+                                  title: Text(
+                                    algo,
+                                    style: const TextStyle(color: Colors.white),
+                                  ),
+                                  onTap: () => Navigator.pop(context, algo),
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                            ],
+                          );
+                        },
+                      );
+
+                      if (selected != null) {
                         showDialog(
                           context: context,
                           barrierDismissible: false,
-                          barrierColor: Colors.black.withOpacity(0.5),
                           builder: (_) => Center(
                             child: Container(
                               width: 70,
@@ -148,119 +248,100 @@ class _ChatScreenState extends State<ChatScreen> {
                         );
 
                         try {
-                          await chat.deleteChat(widget.chatId);
+                          await chat.updateEncryption(widget.chatId, selected);
                           if (context.mounted) {
                             Navigator.pop(context);
-                            context.go('/home');
+                            _showActionSnack(
+                              context,
+                              'Алгоритм установлен: $selected',
+                            );
                           }
                         } catch (e) {
                           Navigator.pop(context);
-                          _showActionSnack(context, 'Ошибка при удалении чата');
+                          _showActionSnack(context, 'Ошибка при обновлении');
                         }
-                        break;
-                      case 'decrypt':
-                        final selected = await showModalBottomSheet<String>(
-                          context: context,
-                          backgroundColor: Colors.grey[900],
-                          shape: const RoundedRectangleBorder(
-                            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-                          ),
-                          builder: (context) {
-                            final options = ['AES', 'RSA', 'ChaCha20', 'None'];
-                            return Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                const Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 16),
-                                  child: Text(
-                                    'Выберите тип расшифровки',
-                                    style: TextStyle(color: Colors.white70, fontSize: 16),
-                                  ),
-                                ),
-                                ...options.map((algo) => ListTile(
-                                  title: Text(algo, style: const TextStyle(color: Colors.white)),
-                                  onTap: () => Navigator.pop(context, algo),
-                                )),
-                                const SizedBox(height: 16),
-                              ],
-                            );
-                          },
-                        );
+                      }
+                      break;
+                    case 'pin':
+                      final isPinned =
+                          chat.userChats.firstWhere(
+                            (c) => c['chatId'] == widget.chatId,
+                          )['pinned'] ==
+                          true;
 
-                        if (selected != null) {
-                          showDialog(
-                            context: context,
-                            barrierDismissible: false,
-                            builder: (_) => Center(
-                              child: Container(
-                                width: 70,
-                                height: 70,
-                                padding: const EdgeInsets.all(16),
-                                decoration: BoxDecoration(
-                                  color: Colors.grey[900],
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                                child: const LoadingIndicator(
-                                  indicatorType: Indicator.ballSpinFadeLoader,
-                                  colors: [Colors.white],
-                                  strokeWidth: 2,
-                                ),
-                              ),
+                      showDialog(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (_) => Center(
+                          child: Container(
+                            width: 70,
+                            height: 70,
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: Colors.grey[900],
+                              borderRadius: BorderRadius.circular(16),
                             ),
-                          );
+                            child: const LoadingIndicator(
+                              indicatorType: Indicator.ballSpinFadeLoader,
+                              colors: [Colors.white],
+                              strokeWidth: 2,
+                            ),
+                          ),
+                        ),
+                      );
 
-                          try {
-                            await chat.updateEncryption(widget.chatId, selected);
-                            if (context.mounted) {
-                              Navigator.pop(context);
-                              _showActionSnack(context, 'Алгоритм установлен: $selected');
-                            }
-                          } catch (e) {
-                            Navigator.pop(context);
-                            _showActionSnack(context, 'Ошибка при обновлении');
-                          }
+                      try {
+                        await chat.togglePin(widget.chatId, !isPinned);
+                        if (context.mounted) {
+                          Navigator.pop(context);
+                          _showActionSnack(
+                            context,
+                            isPinned ? 'Чат откреплён' : 'Чат закреплён',
+                          );
                         }
-                        break;
-                      case 'pin':
-                        _showActionSnack(context, 'Чат закреплён');
-                        // TODO: Логика закрепления
-                        break;
-                    }
-                  },
-                  itemBuilder: (context) => [
-                    PopupMenuItem(
-                      value: isBlocked ? 'unblock' : 'block',
-                      child: Text(
-                        isBlocked ? 'Разблокировать контакт' : 'Заблокировать контакт',
-                        style: const TextStyle(color: Colors.white),
-                      ),
+                      } catch (e) {
+                        Navigator.pop(context);
+                        _showActionSnack(context, 'Ошибка при закреплении');
+                      }
+                      break;
+                  }
+                },
+                itemBuilder: (context) => [
+                  PopupMenuItem(
+                    value: isBlocked ? 'unblock' : 'block',
+                    child: Text(
+                      isBlocked
+                          ? 'Разблокировать контакт'
+                          : 'Заблокировать контакт',
+                      style: const TextStyle(color: Colors.white),
                     ),
-                    const PopupMenuItem(
-                      value: 'delete',
-                      child: Text(
-                        'Удалить чат',
-                        style: TextStyle(color: Colors.white),
-                      ),
+                  ),
+                  const PopupMenuItem(
+                    value: 'delete',
+                    child: Text(
+                      'Удалить чат',
+                      style: TextStyle(color: Colors.white),
                     ),
-                    const PopupMenuItem(
-                      value: 'decrypt',
-                      child: Text(
-                        'Изменить расшифровку',
-                        style: TextStyle(color: Colors.white),
-                      ),
+                  ),
+                  const PopupMenuItem(
+                    value: 'decrypt',
+                    child: Text(
+                      'Изменить расшифровку',
+                      style: TextStyle(color: Colors.white),
                     ),
-                    const PopupMenuItem(
-                      value: 'pin',
-                      child: Text(
-                        'Закрепить чат',
-                        style: TextStyle(color: Colors.white),
-                      ),
+                  ),
+                  const PopupMenuItem(
+                    value: 'pin',
+                    child: Text(
+                      'Закрепить чат',
+                      style: TextStyle(color: Colors.white),
                     ),
-                  ],
-                );
-              },
-            ),
-          ]
+                  ),
+                ],
+              );
+            },
+          ),
+        ],
       ),
       body: Column(
         children: [
@@ -290,9 +371,14 @@ class _ChatScreenState extends State<ChatScreen> {
                 final isMe = msg.sender == currentUser;
 
                 return Align(
-                  alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
+                  alignment: isMe
+                      ? Alignment.centerRight
+                      : Alignment.centerLeft,
                   child: Container(
-                    margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 10),
+                    margin: const EdgeInsets.symmetric(
+                      vertical: 4,
+                      horizontal: 10,
+                    ),
                     padding: const EdgeInsets.all(12),
                     constraints: const BoxConstraints(maxWidth: 300),
                     decoration: BoxDecoration(
@@ -382,13 +468,14 @@ class _ChatScreenState extends State<ChatScreen> {
     final text = controller.text.trim();
     if (text.isEmpty) return;
 
+    controller.clear(); // 👈 очищаем до await
+
     await context.read<ChatProvider>().sendMessage(
       chatId: widget.chatId,
       sender: currentUser,
       text: text,
     );
 
-    controller.clear();
     scrollController.animateTo(
       0,
       duration: const Duration(milliseconds: 300),
@@ -397,6 +484,9 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   void _showAvatarDialog(BuildContext context) {
+    final currentUser = context.read<AuthProvider>().username ?? 'user';
+    final otherUser = widget.chatId.split('_').firstWhere((u) => u != currentUser);
+
     showGeneralDialog(
       context: context,
       barrierDismissible: true,
@@ -419,10 +509,17 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
               ],
             ),
-            child: const CircleAvatar(
+            child: CircleAvatar(
               radius: 100,
               backgroundColor: Colors.transparent,
-              child: Icon(Icons.person, size: 100, color: Colors.white70),
+              child: Text(
+                otherUser.isNotEmpty ? otherUser[0].toUpperCase() : '?',
+                style: const TextStyle(
+                  fontSize: 100,
+                  color: Colors.white70,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
           ),
         );

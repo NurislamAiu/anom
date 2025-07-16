@@ -35,8 +35,8 @@ class ChatProvider extends ChangeNotifier {
     );
 
     await _chatService.sendMessage(chatId, msg);
-  }
 
+  }
   void clear() {
     _messages = [];
     notifyListeners();
@@ -44,11 +44,17 @@ class ChatProvider extends ChangeNotifier {
 
   Future<void> loadUserChats(String username) async {
     _userChats = await _chatService.getUserChats(username);
+    _userChats.sort((a, b) {
+      final aPinned = a['pinned'] == true ? 0 : 1;
+      final bPinned = b['pinned'] == true ? 0 : 1;
+      return aPinned.compareTo(bPinned);
+    });
     notifyListeners();
   }
 
   Future<void> deleteChat(String chatId) async {
     await _chatService.deleteChat(chatId);
+
     _userChats.removeWhere((chat) => chat['chatId'] == chatId);
     notifyListeners();
   }
@@ -59,6 +65,21 @@ class ChatProvider extends ChangeNotifier {
     final index = _userChats.indexWhere((chat) => chat['chatId'] == chatId);
     if (index != -1) {
       _userChats[index]['encryption'] = algorithm;
+      notifyListeners();
+    }
+  }
+
+  Future<void> togglePin(String chatId, bool pinned) async {
+    await _chatService.togglePinChat(chatId, pinned);
+
+    final index = _userChats.indexWhere((c) => c['chatId'] == chatId);
+    if (index != -1) {
+      _userChats[index]['pinned'] = pinned;
+      _userChats.sort((a, b) {
+        final aPinned = a['pinned'] == true ? 0 : 1;
+        final bPinned = b['pinned'] == true ? 0 : 1;
+        return aPinned.compareTo(bPinned);
+      });
       notifyListeners();
     }
   }
