@@ -31,20 +31,29 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: Colors.black,
       appBar: AppBar(
         backgroundColor: Colors.black,
-        title: Text(
+        title: const Text(
           'ANOM',
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
+
         actions: [
-          IconButton(
-            icon: const Icon(Icons.search, color: Colors.white),
-            onPressed: () => context.go('/search'),
-          ),
-          IconButton(
-            icon: const Icon(Icons.person_outline, color: Colors.white),
-            onPressed: () => context.go('/profile'),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: GestureDetector(
+              onTap: () => context.go('/profile'),
+              child: const CircleAvatar(
+                radius: 26,
+                backgroundColor: Colors.white10,
+                child: Icon(Icons.person, color: Colors.white70),
+              ),
+            ),
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => context.go('/search'),
+        backgroundColor: Colors.white,
+        child: const Icon(Icons.search, color: Colors.black),
       ),
       body: chats.isEmpty
           ? const Center(
@@ -63,30 +72,53 @@ class _HomeScreenState extends State<HomeScreen> {
           final updatedAt = chat['updatedAt'] as DateTime?;
 
           return Container(
-            margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
               color: Colors.grey[900],
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.white10),
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.3),
+                  blurRadius: 6,
+                  offset: const Offset(0, 4),
+                ),
+              ],
             ),
             child: ListTile(
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              leading: CircleAvatar(
+                radius: 24,
+                backgroundColor: Colors.white12,
+                child: Text(
+                  chatWith[0].toUpperCase(),
+                  style: const TextStyle(fontSize: 20, color: Colors.white),
+                ),
+              ),
               title: Text(
                 chatWith,
                 style: const TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
+                  fontSize: 16,
                 ),
               ),
-              subtitle: Text(
-                lastMessage,
-                style: const TextStyle(color: Colors.white70),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
+              subtitle: Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: Text(
+                  lastMessage,
+                  style: const TextStyle(color: Colors.white70, fontSize: 13),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
-              trailing: Text(
-                updatedAt != null ? DateFormat.Hm().format(updatedAt) : '',
-                style: const TextStyle(color: Colors.white54, fontSize: 12),
+              trailing: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    updatedAt != null ? DateFormat.Hm().format(updatedAt) : '',
+                    style: const TextStyle(color: Colors.white54, fontSize: 11),
+                  ),
+                ],
               ),
               onTap: () => context.go('/chat/${chat['chatId']}'),
             ),
