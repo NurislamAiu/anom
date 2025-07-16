@@ -7,25 +7,27 @@ import 'theme/app_theme.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final bool showOnboarding;
+
+  const MyApp({super.key, required this.showOnboarding});
 
   @override
   Widget build(BuildContext context) {
     final auth = Provider.of<AuthProvider>(context, listen: true);
 
     return MaterialApp.router(
-      title: 'Secure Chat',
+      title: 'A N O M',
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
       themeMode: ThemeMode.system,
-      routerConfig: AppRouter.router(context),
+      routerConfig: AppRouter.router(context, showOnboarding),
       debugShowCheckedModeBanner: false,
       locale: Locale(auth.locale),
-      supportedLocales: [
+      supportedLocales: const [
         Locale('en'),
         Locale('ru'),
       ],
-      localizationsDelegates: [
+      localizationsDelegates: const [
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,

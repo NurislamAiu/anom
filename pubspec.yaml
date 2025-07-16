@@ -50,6 +50,7 @@ dependencies:
   loading_indicator: ^3.1.1
   url_launcher: ^6.3.2
   iconsax: ^0.0.8
+  shared_preferences: ^2.5.3
 
 flutter_native_splash:
   color: "#000000"

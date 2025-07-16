@@ -5,28 +5,42 @@ import '../../features/auth/presentation/login_screen.dart';
 import '../../features/auth/presentation/register_screen.dart';
 import '../../features/chat/presentation/chat_screen.dart';
 import '../../features/home/presentation/home_screen.dart';
+import '../../features/onboarding/onboarding_screen.dart';
 import '../../features/profile/presentation/profile_screen.dart';
 import '../../features/search/presentation/search_screen.dart';
 import '../../providers/auth_provider.dart';
 
 class AppRouter {
-  static GoRouter router(BuildContext context) {
+  static GoRouter router(BuildContext context, bool showOnboarding) {
     final auth = Provider.of<AuthProvider>(context, listen: true);
 
     return GoRouter(
-      initialLocation: '/login',
+      initialLocation: showOnboarding ? '/onboarding' : '/login',
       refreshListenable: auth,
       redirect: (context, state) {
         final auth = Provider.of<AuthProvider>(context, listen: false);
         final isLoggedIn = auth.isLoggedIn;
         final isLoggingIn = state.uri.toString() == '/login';
         final isRegistering = state.uri.toString() == '/register';
+        final isOnboarding = state.uri.toString() == '/onboarding';
 
-        if (!isLoggedIn && !isLoggingIn && !isRegistering) return '/login';
-        if (isLoggedIn && (isLoggingIn || isRegistering)) return '/home';
+        // Если ещё не авторизован — можно показать login/register/onboarding
+        if (!isLoggedIn && !isLoggingIn && !isRegistering && !isOnboarding) {
+          return '/login';
+        }
+
+        // Если уже вошёл — не показываем login/register/onboarding
+        if (isLoggedIn && (isLoggingIn || isRegistering || isOnboarding)) {
+          return '/home';
+        }
+
         return null;
       },
       routes: [
+        GoRoute(
+          path: '/onboarding',
+          builder: (context, state) => const OnboardingScreen(),
+        ),
         GoRoute(
           path: '/login',
           builder: (context, state) => const LoginScreen(),
