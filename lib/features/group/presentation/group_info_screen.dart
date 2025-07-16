@@ -128,15 +128,17 @@ class GroupInfoScreen extends StatelessWidget {
               icon: Iconsax.shield,
               label: 'Тип шифрования: AES-256',
               onTap: () {
-                _showSnack(context, 'Шифрование: AES-256 (муляж)');
+                _showEncryptionPicker(context);
               },
             ),
             _buildActionTile(
               context,
-              icon: Iconsax.activity,
-              label: 'Закрепить группу',
-              onTap: () {
-                _showSnack(context, 'Закрепление (в разработке)');
+              icon: group.isPinned ? Iconsax.tick_circle : Iconsax.activity,
+              label: group.isPinned ? 'Открепить группу' : 'Закрепить группу',
+              onTap: () async {
+                _showSnack(context, group.isPinned ? 'Группа откреплена' : 'Группа закреплена');
+                context.pop();
+                await context.read<GroupChatProvider>().togglePinned(group.groupId);
               },
             ),
           ],
@@ -206,6 +208,49 @@ class GroupInfoScreen extends StatelessWidget {
           backgroundColor: Colors.transparent,
         ),
       ),
+    );
+  }
+
+  void _showEncryptionPicker(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.grey[900],
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 16,horizontal: 16),
+              child: Text(
+                'Выберите тип шифрования',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            _buildEncryptionOption(context, Icons.lock, 'AES-256'),
+            _buildEncryptionOption(context, Icons.vpn_key, 'RSA'),
+            _buildEncryptionOption(context, Icons.security, 'ECC'),
+            _buildEncryptionOption(context, Icons.cancel, 'None'),
+            const SizedBox(height: 16),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildEncryptionOption(BuildContext context, IconData icon, String label) {
+    return ListTile(
+      title: Text(label, style: const TextStyle(color: Colors.white)),
+      onTap: () {
+        Navigator.pop(context);
+        _showSnack(context, 'Вы выбрали: $label');
+      },
     );
   }
 }

@@ -7,6 +7,7 @@ class GroupChat {
   final String? lastMessage;
   final Timestamp createdAt;
   final Timestamp? updatedAt;
+  final bool isPinned;
 
   GroupChat({
     required this.groupId,
@@ -15,6 +16,7 @@ class GroupChat {
     required this.createdAt,
     this.lastMessage,
     this.updatedAt,
+    this.isPinned = false
   });
 
   Map<String, dynamic> toJson() => {
@@ -24,6 +26,7 @@ class GroupChat {
     'lastMessage': lastMessage,
     'createdAt': createdAt,
     'updatedAt': updatedAt,
+    'isPinned': isPinned,
   };
 
   factory GroupChat.fromJson(Map<String, dynamic> json) {
@@ -34,6 +37,7 @@ class GroupChat {
       lastMessage: json['lastMessage'],
       createdAt: json['createdAt'],
       updatedAt: json['updatedAt'],
+      isPinned: json['isPinned'] ?? false,
     );
   }
 }

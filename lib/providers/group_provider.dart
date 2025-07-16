@@ -71,4 +71,24 @@ class GroupChatProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> togglePinned(String groupId) async {
+    final index = _groups.indexWhere((g) => g.groupId == groupId);
+    if (index != -1) {
+      final current = _groups[index];
+      final newValue = !current.isPinned;
+
+      await _service.togglePinGroup(groupId, newValue);
+
+      _groups[index] = GroupChat(
+        groupId: current.groupId,
+        groupName: current.groupName,
+        participants: current.participants,
+        createdAt: current.createdAt,
+        isPinned: newValue,
+      );
+
+      notifyListeners();
+    }
+  }
+
 }

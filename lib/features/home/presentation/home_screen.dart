@@ -36,6 +36,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     final chats = context.watch<ChatProvider>().userChats;
     final username = context.read<AuthProvider>().username ?? '';
+    final groups = context.watch<GroupChatProvider>().groups;
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -241,7 +242,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               final groups = groupProvider.groups;
               if (groups.isEmpty) {
                 return const Center(
-                  child: Text('👥 Групп ещё нет', style: TextStyle(color: Colors.white54)),
+                  child: Text('Групп ещё нет', style: TextStyle(color: Colors.white54)),
                 );
               }
 
@@ -249,6 +250,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 itemCount: groups.length,
                 itemBuilder: (_, i) {
                   final group = groups[i];
+                  final isPinned = group.isPinned;
 
                   return GestureDetector(
                     onTap: () => context.go('/group/${group.groupId}'),
@@ -270,7 +272,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         leading: CircleAvatar(
                           radius: 24,
                           backgroundColor: Colors.white10,
-                          child: const Icon(Icons.group, color: Colors.white70),
+                          child: Icon(
+                            isPinned ? Iconsax.activity : Icons.group,
+                            color: isPinned ? Colors.amber : Colors.white70,
+                          ),
                         ),
                         title: Text(
                           group.groupName,
@@ -284,6 +289,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           'Участники: ${group.participants.length}',
                           style: const TextStyle(color: Colors.white60, fontSize: 13),
                         ),
+                        trailing: isPinned
+                            ? const Icon(Iconsax.activity, color: Colors.amber)
+                            : null,
                       ),
                     ),
                   );

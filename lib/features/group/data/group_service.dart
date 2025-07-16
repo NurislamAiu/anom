@@ -88,4 +88,10 @@ class GroupChatService {
   Future<void> deleteGroupChat(String groupId) async {
     await _db.collection('groupChats').doc(groupId).delete();
   }
+
+  Future<void> togglePinGroup(String groupId, bool value) async {
+    await _db.collection('groupChats').doc(groupId).update({
+      'isPinned': value,
+    });
+  }
 }
