@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../providers/auth_provider.dart';
@@ -12,7 +13,9 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
+  late final TabController _tabController;
+
   @override
   void initState() {
     super.initState();
@@ -20,6 +23,7 @@ class _HomeScreenState extends State<HomeScreen> {
     if (username != null) {
       context.read<ChatProvider>().loadUserChats(username);
     }
+    _tabController = TabController(length: 3, vsync: this);
   }
 
   @override
@@ -32,10 +36,20 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         backgroundColor: Colors.black,
         title: const Text(
-          'ANOM',
+          'A N O M',
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
-
+        bottom: TabBar(
+          controller: _tabController,
+          indicatorColor: Colors.white,
+          labelColor: Colors.white,
+          unselectedLabelColor: Colors.white54,
+          tabs:  [
+            Tab(icon: Icon(Iconsax.chart), text: 'Chats'),
+            Tab(icon: Icon(Iconsax.camera), text: 'Stories'),
+            Tab(icon: Icon(Iconsax.people), text: 'Groups'),
+          ],
+        ),
         actions: [
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -55,75 +69,97 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: Colors.white,
         child: const Icon(Icons.search, color: Colors.black),
       ),
-      body: chats.isEmpty
-          ? const Center(
-        child: Text(
-          '🔒 No secure chats yet',
-          style: TextStyle(color: Colors.grey),
-        ),
-      )
-          : ListView.builder(
-        itemCount: chats.length,
-        itemBuilder: (_, i) {
-          final chat = chats[i];
-          final participants = chat['participants'] as List<String>;
-          final chatWith = participants.firstWhere((u) => u != username);
-          final lastMessage = chat['lastMessage'] ?? '';
-          final updatedAt = chat['updatedAt'] as DateTime?;
+      body: TabBarView(
+        controller: _tabController,
+        children: [
+          // --- Chats ---
+          chats.isEmpty
+              ? const Center(
+            child: Text(
+              '🔒 No secure chats yet',
+              style: TextStyle(color: Colors.grey),
+            ),
+          )
+              : ListView.builder(
+            itemCount: chats.length,
+            itemBuilder: (_, i) {
+              final chat = chats[i];
+              final participants = chat['participants'] as List<String>;
+              final chatWith = participants.firstWhere((u) => u != username);
+              final lastMessage = chat['lastMessage'] ?? '';
+              final updatedAt = chat['updatedAt'] as DateTime?;
 
-          return Container(
-            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            decoration: BoxDecoration(
-              color: Colors.grey[900],
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.3),
-                  blurRadius: 6,
-                  offset: const Offset(0, 4),
+              return Container(
+                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  color: Colors.grey[900],
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.3),
+                      blurRadius: 6,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-            child: ListTile(
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-              leading: CircleAvatar(
-                radius: 24,
-                backgroundColor: Colors.white12,
-                child: Text(
-                  chatWith[0].toUpperCase(),
-                  style: const TextStyle(fontSize: 20, color: Colors.white),
-                ),
-              ),
-              title: Text(
-                chatWith,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                ),
-              ),
-              subtitle: Padding(
-                padding: const EdgeInsets.only(top: 4),
-                child: Text(
-                  lastMessage,
-                  style: const TextStyle(color: Colors.white70, fontSize: 13),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-              trailing: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    updatedAt != null ? DateFormat.Hm().format(updatedAt) : '',
-                    style: const TextStyle(color: Colors.white54, fontSize: 11),
+                child: ListTile(
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  leading: CircleAvatar(
+                    radius: 24,
+                    backgroundColor: Colors.white12,
+                    child: Text(
+                      chatWith[0].toUpperCase(),
+                      style: const TextStyle(fontSize: 20, color: Colors.white),
+                    ),
                   ),
-                ],
-              ),
-              onTap: () => context.go('/chat/${chat['chatId']}'),
+                  title: Text(
+                    chatWith,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                  subtitle: Padding(
+                    padding: const EdgeInsets.only(top: 4),
+                    child: Text(
+                      lastMessage,
+                      style: const TextStyle(color: Colors.white70, fontSize: 13),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  trailing: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        updatedAt != null ? DateFormat.Hm().format(updatedAt) : '',
+                        style: const TextStyle(color: Colors.white54, fontSize: 11),
+                      ),
+                    ],
+                  ),
+                  onTap: () => context.go('/chat/${chat['chatId']}'),
+                ),
+              );
+            },
+          ),
+
+          // --- Stories (пока заглушка) ---
+          const Center(
+            child: Text(
+              '📷 Stories coming soon',
+              style: TextStyle(color: Colors.white54),
             ),
-          );
-        },
+          ),
+
+          // --- Groups (пока заглушка) ---
+          const Center(
+            child: Text(
+              '👥 Group chats coming soon',
+              style: TextStyle(color: Colors.white54),
+            ),
+          ),
+        ],
       ),
     );
   }

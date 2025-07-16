@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -66,7 +67,7 @@ class _ChatScreenState extends State<ChatScreen> {
           onPressed: () => context.go('/home'),
         ),
         actions: [
-          IconButton(onPressed: (){}, icon: Icon(Icons.phone, color: Colors.white70)),
+          IconButton(onPressed: (){}, icon: Icon(Iconsax.call, color: Colors.white70)),
           IconButton(onPressed: (){}, icon: Icon(Icons.more_vert_outlined, color: Colors.white70))
         ],
       ),
@@ -128,13 +129,13 @@ class _ChatScreenState extends State<ChatScreen> {
             child: Row(
               children: [
                 IconButton(
-                  icon: const Icon(Icons.photo, color: Colors.white70),
+                  icon: Icon(Iconsax.health, color: Colors.white70),
                   onPressed: () {
                     // TODO: добавить отправку фото
                   },
                 ),
                 IconButton(
-                  icon: const Icon(Icons.videocam, color: Colors.white70),
+                  icon: const Icon(Iconsax.video, color: Colors.white70),
                   onPressed: () {
                     // TODO: добавить отправку видео
                   },
@@ -160,7 +161,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
                 const SizedBox(width: 6),
                 IconButton(
-                  icon: const Icon(Icons.send, color: Colors.white),
+                  icon: const Icon(Iconsax.send1, color: Colors.white),
                   onPressed: () => _sendMessage(currentUser),
                 ),
               ],
