@@ -46,10 +46,13 @@ class _ChatScreenState extends State<ChatScreen> {
         foregroundColor: Colors.white,
         title: Row(
           children: [
-            const CircleAvatar(
-              radius: 16,
-              backgroundColor: Colors.white12,
-              child: Icon(Icons.person, color: Colors.white, size: 18),
+            GestureDetector(
+              onTap: () => _showAvatarDialog(context),
+              child: const CircleAvatar(
+                radius: 16,
+                backgroundColor: Colors.white12,
+                child: Icon(Icons.person, color: Colors.white, size: 18),
+              ),
             ),
             const SizedBox(width: 8),
             Text(
@@ -179,6 +182,27 @@ class _ChatScreenState extends State<ChatScreen> {
       0,
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeOut,
+    );
+  }
+
+  void _showAvatarDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (_) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: Center(
+          child: Container(
+            width: 200,
+            height: 200,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.grey[900],
+              border: Border.all(color: Colors.white12),
+            ),
+            child: const Icon(Icons.person, size: 100, color: Colors.white70),
+          ),
+        ),
+      ),
     );
   }
 }
