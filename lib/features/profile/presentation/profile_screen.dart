@@ -39,10 +39,33 @@ class ProfileScreen extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(24),
         children: [
-          const CircleAvatar(
-            radius: 50,
-            backgroundColor: Colors.white10,
-            child: Icon(Icons.person, size: 60, color: Colors.white70),
+          Center(
+            child: Stack(
+              alignment: Alignment.bottomRight,
+              children: [
+                const CircleAvatar(
+                  radius: 70,
+                  backgroundColor: Colors.white10,
+                  child: Icon(Icons.person, size: 60, color: Colors.white70),
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.white,
+                    border: Border.all(color: Colors.black, width: 2),
+                  ),
+                  child: IconButton(
+                    icon: const Icon(Icons.edit, size: 18, color: Colors.black),
+                    onPressed: () {
+                      // TODO: реализовать выбор или загрузку аватарки
+                    },
+                    tooltip: 'Change avatar',
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                  ),
+                ),
+              ],
+            ),
           ),
           const SizedBox(height: 12),
           Center(
@@ -105,8 +128,29 @@ class ProfileScreen extends StatelessWidget {
             title: const Text('Offline Communication', style: TextStyle(color: Colors.white)),
             subtitle: const Text('Encrypted messaging without internet', style: TextStyle(color: Colors.white54, fontSize: 12)),
             onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Coming soon: Offline chat'), behavior: SnackBarBehavior.floating),
+              showDialog(
+                context: context,
+                builder: (_) => AlertDialog(
+                  backgroundColor: Colors.grey[900],
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  title: const Row(
+                    children: [
+                      Icon(Icons.wifi_off, color: Colors.white),
+                      SizedBox(width: 8),
+                      Text('Offline Chat', style: TextStyle(color: Colors.white)),
+                    ],
+                  ),
+                  content: const Text(
+                    '🔒 Offline secure messaging is under development.\n\nSoon you’ll be able to chat even without internet using Bluetooth or local mesh.',
+                    style: TextStyle(color: Colors.white70, fontSize: 14),
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('OK', style: TextStyle(color: Colors.blueAccent)),
+                    ),
+                  ],
+                ),
               );
             },
             trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.white38),
@@ -118,8 +162,29 @@ class ProfileScreen extends StatelessWidget {
             title: const Text('Built-in VPN', style: TextStyle(color: Colors.white)),
             subtitle: const Text('Protect your traffic using integrated VPN', style: TextStyle(color: Colors.white54, fontSize: 12)),
             onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('VPN configuration coming soon'), behavior: SnackBarBehavior.floating),
+              showDialog(
+                context: context,
+                builder: (_) => AlertDialog(
+                  backgroundColor: Colors.grey[900],
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  title: const Row(
+                    children: [
+                      Icon(Icons.vpn_lock, color: Colors.white),
+                      SizedBox(width: 8),
+                      Text('VPN Module', style: TextStyle(color: Colors.white)),
+                    ],
+                  ),
+                  content: const Text(
+                    '🛰 A secure VPN module is on its way!\n\nYou’ll soon be able to route all your messages through our encrypted VPN tunnel.',
+                    style: TextStyle(color: Colors.white70, fontSize: 14),
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('Close', style: TextStyle(color: Colors.blueAccent)),
+                    ),
+                  ],
+                ),
               );
             },
             trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.white38),
@@ -131,8 +196,29 @@ class ProfileScreen extends StatelessWidget {
             title: const Text('Proxy Settings', style: TextStyle(color: Colors.white)),
             subtitle: const Text('Custom proxy or Tor support', style: TextStyle(color: Colors.white54, fontSize: 12)),
             onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Proxy setup coming soon'), behavior: SnackBarBehavior.floating),
+              showDialog(
+                context: context,
+                builder: (_) => AlertDialog(
+                  backgroundColor: Colors.grey[900],
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  title: const Row(
+                    children: [
+                      Icon(Icons.security, color: Colors.white),
+                      SizedBox(width: 8),
+                      Text('Proxy & Tor', style: TextStyle(color: Colors.white)),
+                    ],
+                  ),
+                  content: const Text(
+                    '🌍 Proxy and Tor support will be available soon.\n\nCustomize your connection to bypass censorship and stay anonymous.',
+                    style: TextStyle(color: Colors.white70, fontSize: 14),
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('Got it', style: TextStyle(color: Colors.blueAccent)),
+                    ),
+                  ],
+                ),
               );
             },
             trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.white38),

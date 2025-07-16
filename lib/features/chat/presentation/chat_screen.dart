@@ -65,6 +65,10 @@ class _ChatScreenState extends State<ChatScreen> {
           icon: const Icon(Icons.arrow_back_ios_new),
           onPressed: () => context.go('/home'),
         ),
+        actions: [
+          IconButton(onPressed: (){}, icon: Icon(Icons.phone, color: Colors.white70)),
+          IconButton(onPressed: (){}, icon: Icon(Icons.more_vert_outlined, color: Colors.white70))
+        ],
       ),
       body: Column(
         children: [
@@ -184,25 +188,44 @@ class _ChatScreenState extends State<ChatScreen> {
       curve: Curves.easeOut,
     );
   }
-
   void _showAvatarDialog(BuildContext context) {
-    showDialog(
+    showGeneralDialog(
       context: context,
-      builder: (_) => Dialog(
-        backgroundColor: Colors.transparent,
-        child: Center(
+      barrierDismissible: true,
+      barrierLabel: 'Avatar',
+      barrierColor: Colors.white.withOpacity(0.2),
+      pageBuilder: (context, anim1, anim2) {
+        return Center(
           child: Container(
-            width: 200,
-            height: 200,
+            width: 220,
+            height: 220,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: Colors.grey[900],
-              border: Border.all(color: Colors.white12),
+              border: Border.all(color: Colors.white24, width: 2),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.6),
+                  blurRadius: 20,
+                  spreadRadius: 2,
+                ),
+              ],
             ),
-            child: const Icon(Icons.person, size: 100, color: Colors.white70),
+            child: const CircleAvatar(
+              radius: 100,
+              backgroundColor: Colors.transparent,
+              child: Icon(Icons.person, size: 100, color: Colors.white70),
+            ),
           ),
-        ),
-      ),
+        );
+      },
+      transitionBuilder: (context, anim1, anim2, child) {
+        return ScaleTransition(
+          scale: CurvedAnimation(parent: anim1, curve: Curves.ease),
+          child: child,
+        );
+      },
+      transitionDuration: const Duration(milliseconds: 300),
     );
   }
 }
