@@ -1,4 +1,5 @@
 import 'package:anom/providers/chat_provider.dart';
+import 'package:anom/providers/profile_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
@@ -23,6 +24,7 @@ void main() async {
         ChangeNotifierProvider<AuthProvider>.value(value: authProvider),
         ChangeNotifierProvider<SearchProvider>(create: (_) => SearchProvider()),
         ChangeNotifierProvider<ChatProvider>(create: (_) => ChatProvider()),
+        ChangeNotifierProvider<ProfileProvider>(create: (_) => ProfileProvider()),
       ],
       child: const MyApp(),
     ),

@@ -185,7 +185,9 @@ class _LoginScreenState extends State<LoginScreen> {
           style: TextStyle(color: Colors.white),
         ),
         content: const Text(
-          'To reset your password, please send an email to our support team.\n\n📩 support@hackeratyrau.com',
+          'To reset your password, please send an email to our support team:\n\n'
+              '📩 Cyberwest.kz@gmail.com\n\n'
+              '🔒 Your personal data will remain protected and confidential during this process.',
           style: TextStyle(color: Colors.white70),
         ),
         actions: [
@@ -199,7 +201,7 @@ class _LoginScreenState extends State<LoginScreen> {
             style: ElevatedButton.styleFrom(backgroundColor: Colors.blueAccent),
             onPressed: () {
               Navigator.pop(context);
-              launchUrl(Uri.parse('mailto:support@hackeratyrau.com?subject=Password Reset Request'));
+              launchUrl(Uri.parse('mailto:Cyberwest.kz@gmail.com?subject=Password Reset Request'));
             },
           ),
         ],

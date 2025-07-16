@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-
 import '../../../../providers/auth_provider.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../providers/profile_provider.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -11,6 +11,7 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>();
+    final profile = context.watch<ProfileProvider>();
     final username = auth.username ?? 'Unknown';
     final t = AppLocalizations.of(context)!;
 
@@ -52,31 +53,88 @@ class ProfileScreen extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: 32),
+          ListTile(
+            leading: const Icon(Icons.person_outline, color: Colors.white),
+            title: const Text('About Me', style: TextStyle(color: Colors.white)),
+            subtitle: Text(
+              profile.bio.isEmpty ? 'No bio yet' : profile.bio,
+              style: const TextStyle(color: Colors.white54),
+            ),
+            onTap: () => _showEditBioDialog(context),
+            trailing: const Icon(Icons.edit, color: Colors.white38),
+          ),
           const Divider(color: Colors.white12),
 
+          // Language
           ListTile(
             leading: const Icon(Icons.language, color: Colors.white),
             title: Text(t.changeLanguage, style: const TextStyle(color: Colors.white)),
             onTap: () => _showLanguageDialog(context, t),
             trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.white38),
           ),
+
+          // Password
           ListTile(
             leading: const Icon(Icons.lock, color: Colors.white),
             title: Text(t.changePassword, style: const TextStyle(color: Colors.white)),
             onTap: () => _showPasswordDialog(context, auth, t),
             trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.white38),
           ),
+
+          // About
           ListTile(
             leading: const Icon(Icons.info_outline, color: Colors.white),
             title: Text(t.about, style: const TextStyle(color: Colors.white)),
             onTap: () => _showAboutDialog(context, t),
             trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.white38),
           ),
+
+          // Privacy
           ListTile(
             leading: const Icon(Icons.privacy_tip, color: Colors.white),
             title: Text(t.privacy, style: const TextStyle(color: Colors.white)),
             onTap: () => _showPolicyDialog(context, t),
+            trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.white38),
+          ),
+
+          const Divider(color: Colors.white12),
+
+          // Offline Communication
+          ListTile(
+            leading: const Icon(Icons.wifi_off, color: Colors.white),
+            title: const Text('Offline Communication', style: TextStyle(color: Colors.white)),
+            subtitle: const Text('Encrypted messaging without internet', style: TextStyle(color: Colors.white54, fontSize: 12)),
+            onTap: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Coming soon: Offline chat'), behavior: SnackBarBehavior.floating),
+              );
+            },
+            trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.white38),
+          ),
+
+          // VPN
+          ListTile(
+            leading: const Icon(Icons.vpn_lock, color: Colors.white),
+            title: const Text('Built-in VPN', style: TextStyle(color: Colors.white)),
+            subtitle: const Text('Protect your traffic using integrated VPN', style: TextStyle(color: Colors.white54, fontSize: 12)),
+            onTap: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('VPN configuration coming soon'), behavior: SnackBarBehavior.floating),
+              );
+            },
+            trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.white38),
+          ),
+
+          // Proxy
+          ListTile(
+            leading: const Icon(Icons.security, color: Colors.white),
+            title: const Text('Proxy Settings', style: TextStyle(color: Colors.white)),
+            subtitle: const Text('Custom proxy or Tor support', style: TextStyle(color: Colors.white54, fontSize: 12)),
+            onTap: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Proxy setup coming soon'), behavior: SnackBarBehavior.floating),
+              );
+            },
             trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.white38),
           ),
         ],
@@ -145,11 +203,7 @@ class ProfileScreen extends StatelessWidget {
             const SizedBox(height: 12),
             Text(
               t.changePassword,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              ),
+              style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 24),
             _blackTextField(controller: current, label: t.currentPassword, icon: Icons.lock_outline),
@@ -204,23 +258,12 @@ class ProfileScreen extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.info_outline, size: 48, color: Colors.white),
             const SizedBox(height: 12),
-            Text(
-              'A N O M',
-              style: TextStyle(fontSize: 28, color: Colors.white, fontWeight: FontWeight.bold),
-            ),
+            const Text('A N O M', style: TextStyle(fontSize: 28, color: Colors.white, fontWeight: FontWeight.bold)),
             const SizedBox(height: 4),
-            const Text(
-              'v1.0 • © 2025 Dubai Airlines',
-              style: TextStyle(color: Colors.white38, fontSize: 12),
-            ),
+            const Text('v1.0 • © 2025 Dubai Airlines', style: TextStyle(color: Colors.white38, fontSize: 12)),
             const SizedBox(height: 16),
-            Text(
-              t.aboutDescription,
-              textAlign: TextAlign.center,
-              style: const TextStyle(color: Colors.white70),
-            ),
+            Text(t.aboutDescription, textAlign: TextAlign.center, style: const TextStyle(color: Colors.white70)),
           ],
         ),
       ),
@@ -248,6 +291,78 @@ class ProfileScreen extends StatelessWidget {
               child: Text(
                 t.privacyDescription,
                 style: const TextStyle(color: Colors.white70),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showEditBioDialog(BuildContext context) {
+    final profile = context.read<ProfileProvider>();
+    final controller = TextEditingController(text: profile.bio);
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.grey[900],
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) => Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+          top: 24,
+          left: 24,
+          right: 24,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              'Edit Bio',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: controller,
+              maxLines: 4,
+              style: const TextStyle(color: Colors.white),
+              decoration: InputDecoration(
+                hintText: 'Write something fun or meaningful...',
+                hintStyle: const TextStyle(color: Colors.white38),
+                filled: true,
+                fillColor: Colors.grey[850],
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: Colors.white12),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: Colors.white),
+                ),
+              ),
+            ),
+            const SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  profile.updateBio(controller.text.trim());
+                  Navigator.pop(context);
+                },
+                icon: const Icon(Icons.edit, color: Colors.black),
+                label: const Text('Save', style: TextStyle(color: Colors.black)),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
               ),
             ),
           ],
