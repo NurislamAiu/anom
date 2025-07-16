@@ -67,8 +67,63 @@ class _ChatScreenState extends State<ChatScreen> {
           onPressed: () => context.go('/home'),
         ),
         actions: [
-          IconButton(onPressed: (){}, icon: Icon(Iconsax.call, color: Colors.white70)),
-          IconButton(onPressed: (){}, icon: Icon(Icons.more_vert_outlined, color: Colors.white70))
+          IconButton(
+            onPressed: () {
+              // Звонок
+            },
+            icon: const Icon(Iconsax.call, color: Colors.white70),
+          ),
+          PopupMenuButton<String>(
+            color: Colors.grey[900],
+            icon: const Icon(Icons.more_vert_outlined, color: Colors.white70),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            onSelected: (value) {
+              switch (value) {
+                case 'block':
+                  _showActionSnack(context, 'Контакт заблокирован');
+                  break;
+                case 'delete':
+                  _showActionSnack(context, 'Чат удалён');
+                  break;
+                case 'decrypt':
+                  _showActionSnack(context, 'Расшифровка обновлена');
+                  break;
+                case 'pin':
+                  _showActionSnack(context, 'Чат закреплён');
+                  break;
+              }
+            },
+            itemBuilder: (context) => [
+              const PopupMenuItem(
+                value: 'block',
+                child: Text(
+                  'Заблокировать контакт',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+              const PopupMenuItem(
+                value: 'delete',
+                child: Text(
+                  'Удалить чат',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+              const PopupMenuItem(
+                value: 'decrypt',
+                child: Text(
+                  'Изменить расшифровку',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+              const PopupMenuItem(
+                value: 'pin',
+                child: Text(
+                  'Закрепить чат',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            ],
+          ),
         ],
       ),
       body: Column(
@@ -189,6 +244,7 @@ class _ChatScreenState extends State<ChatScreen> {
       curve: Curves.easeOut,
     );
   }
+
   void _showAvatarDialog(BuildContext context) {
     showGeneralDialog(
       context: context,
@@ -227,6 +283,16 @@ class _ChatScreenState extends State<ChatScreen> {
         );
       },
       transitionDuration: const Duration(milliseconds: 300),
+    );
+  }
+
+  void _showActionSnack(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: Colors.grey[850],
+      ),
     );
   }
 }
