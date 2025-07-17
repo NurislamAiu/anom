@@ -1,9 +1,10 @@
+import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import '../../../../providers/auth_provider.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../providers/profile_provider.dart';
+import '../../../../providers/auth_provider.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -62,7 +63,7 @@ class ProfileScreen extends StatelessWidget {
                   child: IconButton(
                     icon: const Icon(Icons.edit, size: 18, color: Colors.black),
                     onPressed: () {
-                      // TODO: реализовать выбор или загрузку аватарки
+                      
                     },
                     tooltip: 'Change avatar',
                     padding: EdgeInsets.zero,
@@ -102,7 +103,7 @@ class ProfileScreen extends StatelessWidget {
           ),
           const Divider(color: Colors.white12),
 
-          // Language
+          
           ListTile(
             leading: const Icon(Icons.language, color: Colors.white),
             title: Text(t.changeLanguage, style: const TextStyle(color: Colors.white)),
@@ -110,7 +111,7 @@ class ProfileScreen extends StatelessWidget {
             trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.white38),
           ),
 
-          // Password
+          
           ListTile(
             leading: const Icon(Icons.lock, color: Colors.white),
             title: Text(t.changePassword, style: const TextStyle(color: Colors.white)),
@@ -118,7 +119,7 @@ class ProfileScreen extends StatelessWidget {
             trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.white38),
           ),
 
-          // About
+          
           ListTile(
             leading: const Icon(Icons.info_outline, color: Colors.white),
             title: Text(t.about, style: const TextStyle(color: Colors.white)),
@@ -126,7 +127,7 @@ class ProfileScreen extends StatelessWidget {
             trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.white38),
           ),
 
-          // Privacy
+          
           ListTile(
             leading: const Icon(Icons.privacy_tip, color: Colors.white),
             title: Text(t.privacy, style: const TextStyle(color: Colors.white)),
@@ -136,7 +137,7 @@ class ProfileScreen extends StatelessWidget {
 
           const Divider(color: Colors.white12),
 
-          // Offline Communication
+          
           ListTile(
             leading: const Icon(Icons.wifi_off, color: Colors.white),
             title: const Text('Offline Communication', style: TextStyle(color: Colors.white)),
@@ -155,7 +156,7 @@ class ProfileScreen extends StatelessWidget {
                     ],
                   ),
                   content: const Text(
-                    '🔒 Offline secure messaging is under development.\n\nSoon you’ll be able to chat even without internet using Bluetooth or local mesh.',
+                    'This feature is under development.\n\nYou will soon be able to send and receive encrypted messages even without internet using Bluetooth or mesh network.',
                     style: TextStyle(color: Colors.white70, fontSize: 14),
                   ),
                   actions: [
@@ -170,7 +171,6 @@ class ProfileScreen extends StatelessWidget {
             trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.white38),
           ),
 
-          // VPN
           ListTile(
             leading: const Icon(Icons.vpn_lock, color: Colors.white),
             title: const Text('Built-in VPN', style: TextStyle(color: Colors.white)),
@@ -189,7 +189,7 @@ class ProfileScreen extends StatelessWidget {
                     ],
                   ),
                   content: const Text(
-                    '🛰 A secure VPN module is on its way!\n\nYou’ll soon be able to route all your messages through our encrypted VPN tunnel.',
+                    'Our secure VPN feature is coming soon.\n\nYou’ll be able to route all your traffic through encrypted tunnels to stay private and secure.',
                     style: TextStyle(color: Colors.white70, fontSize: 14),
                   ),
                   actions: [
@@ -204,7 +204,6 @@ class ProfileScreen extends StatelessWidget {
             trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.white38),
           ),
 
-          // Proxy
           ListTile(
             leading: const Icon(Icons.security, color: Colors.white),
             title: const Text('Proxy Settings', style: TextStyle(color: Colors.white)),
@@ -223,7 +222,7 @@ class ProfileScreen extends StatelessWidget {
                     ],
                   ),
                   content: const Text(
-                    '🌍 Proxy and Tor support will be available soon.\n\nCustomize your connection to bypass censorship and stay anonymous.',
+                    'This feature is under construction.\n\nSoon you will be able to use your own proxy or connect through Tor for enhanced anonymity and censorship bypass.',
                     style: TextStyle(color: Colors.white70, fontSize: 14),
                   ),
                   actions: [
@@ -238,7 +237,7 @@ class ProfileScreen extends StatelessWidget {
             trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.white38),
           ),
 
-          // Verification
+          
           ListTile(
             leading: const Icon(Icons.verified_user, color: Colors.white),
             title: const Text('Request Verification', style: TextStyle(color: Colors.white)),
@@ -293,7 +292,7 @@ class ProfileScreen extends StatelessWidget {
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (_) => Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(40),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -322,9 +321,6 @@ class ProfileScreen extends StatelessWidget {
   }
 
   void _showPasswordDialog(BuildContext context, AuthProvider auth, AppLocalizations t) {
-    final current = TextEditingController();
-    final newPass = TextEditingController();
-
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -333,47 +329,45 @@ class ProfileScreen extends StatelessWidget {
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (context) => Padding(
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom + 24,
-          left: 24,
-          right: 24,
-          top: 24,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(Icons.lock_reset, size: 40, color: Colors.white),
-            const SizedBox(height: 12),
-            Text(
-              t.changePassword,
-              style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600),
-            ),
-            const SizedBox(height: 24),
-            _blackTextField(controller: current, label: t.currentPassword, icon: Icons.lock_outline),
-            const SizedBox(height: 16),
-            _blackTextField(controller: newPass, label: t.newPassword, icon: Icons.lock),
-            const SizedBox(height: 24),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                TextButton.icon(
-                  onPressed: () => Navigator.pop(context),
-                  icon: const Icon(Icons.close, color: Colors.red),
-                  label: Text(t.cancel, style: const TextStyle(color: Colors.red)),
+        padding: const EdgeInsets.all(40),
+        child: SizedBox(
+          width: double.infinity,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.lock_reset, size: 48, color: Colors.white),
+              const SizedBox(height: 12),
+              Text(
+                t.changePassword,
+                style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600),
+              ),
+              const SizedBox(height: 20),
+              const Text(
+                'A reset link will be sent to your email address.',
+                style: TextStyle(color: Colors.white70, fontSize: 14),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 28),
+              ElevatedButton.icon(
+                onPressed: () async {
+                  await context.read<AuthProvider>().resetPasswordViaEmail(context);
+                },
+                icon: const Icon(Icons.email_outlined, color: Colors.black),
+                label: const Text('Send Reset Email', style: TextStyle(color: Colors.black)),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
-                ElevatedButton.icon(
-                  onPressed: (){},
-                  icon: const Icon(Icons.check, color: Colors.black),
-                  label: Text(t.change, style: const TextStyle(color: Colors.black)),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                  ),
-                ),
-              ],
-            ),
-          ],
+              ),
+              const SizedBox(height: 20),
+              TextButton.icon(
+                onPressed: () => Navigator.pop(context),
+                icon: const Icon(Icons.close, color: Colors.red),
+                label: Text(t.cancel, style: const TextStyle(color: Colors.red)),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -387,14 +381,14 @@ class ProfileScreen extends StatelessWidget {
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (_) => Padding(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(40),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             const SizedBox(height: 12),
             const Text('A N O M', style: TextStyle(fontSize: 28, color: Colors.white, fontWeight: FontWeight.bold)),
             const SizedBox(height: 4),
-            const Text('v1.0 • © 2025 Dubai Airlines', style: TextStyle(color: Colors.white38, fontSize: 12)),
+            const Text('v1.0 • © 2025 A N O M', style: TextStyle(color: Colors.white38, fontSize: 12)),
             const SizedBox(height: 16),
             Text(t.aboutDescription, textAlign: TextAlign.center, style: const TextStyle(color: Colors.white70)),
           ],
@@ -445,10 +439,10 @@ class ProfileScreen extends StatelessWidget {
       ),
       builder: (context) => Padding(
         padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom + 24,
-          top: 24,
-          left: 24,
-          right: 24,
+          bottom: MediaQuery.of(context).viewInsets.bottom + 40,
+          top: 40,
+          left: 40,
+          right: 40,
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -502,33 +496,6 @@ class ProfileScreen extends StatelessWidget {
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-
-  Widget _blackTextField({
-    required TextEditingController controller,
-    required String label,
-    required IconData icon,
-  }) {
-    return TextField(
-      controller: controller,
-      obscureText: true,
-      style: const TextStyle(color: Colors.white),
-      decoration: InputDecoration(
-        labelText: label,
-        labelStyle: const TextStyle(color: Colors.white70),
-        prefixIcon: Icon(icon, color: Colors.white70),
-        filled: true,
-        fillColor: Colors.grey[850],
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Colors.white12),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Colors.white),
         ),
       ),
     );

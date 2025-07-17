@@ -1,3 +1,5 @@
+import 'package:another_flushbar/flushbar.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../features/auth/data/auth_service.dart';
@@ -16,26 +18,71 @@ class AuthProvider extends ChangeNotifier {
   bool _isLoggedIn = false;
   bool get isLoggedIn => _isLoggedIn;
 
-  /// Загрузка сессии при запуске приложения
+  String? email;
+
+  
+  Future<void> resetPasswordViaEmail(BuildContext context) async {
+    if (email == null || email!.isEmpty) {
+      Flushbar(
+        title: 'No Email Found',
+        message: 'Your account is missing an email address.',
+        backgroundColor: Colors.red[400]!,
+        icon: const Icon(Icons.error_outline, color: Colors.white),
+        flushbarPosition: FlushbarPosition.TOP,
+        margin: const EdgeInsets.all(16),
+        borderRadius: BorderRadius.circular(16),
+        duration: const Duration(seconds: 3),
+      ).show(context);
+
+      return;
+    }
+
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email!);
+
+      Flushbar(
+        title: 'Check Your Email',
+        message: 'A password reset link has been sent to $email',
+        backgroundColor: Colors.green[600]!,
+        icon: const Icon(Icons.email_outlined, color: Colors.white),
+        flushbarPosition: FlushbarPosition.TOP,
+        margin: const EdgeInsets.all(16),
+        borderRadius: BorderRadius.circular(16),
+        duration: const Duration(seconds: 4),
+      ).show(context);
+    } catch (e) {
+      Flushbar(
+        title: 'Failed to Send Email',
+        message: 'Please try again later or contact support.',
+        backgroundColor: Colors.red[400]!,
+        icon: const Icon(Icons.warning_amber_rounded, color: Colors.white),
+        flushbarPosition: FlushbarPosition.TOP,
+        margin: const EdgeInsets.all(16),
+        borderRadius: BorderRadius.circular(16),
+        duration: const Duration(seconds: 4),
+      ).show(context);
+    }
+  }
+
   Future<void> loadSession() async {
     final token = await _storage.read(key: _tokenKey);
     if (token != null) {
       final user = await _authService.getCurrentUsername();
+      final userEmail = await _authService.getCurrentEmail();
       if (user != null) {
         _isLoggedIn = true;
         _username = user;
+        email = userEmail;
         notifyListeners();
       }
     }
   }
 
-  /// Установка языка
   void setLocale(String langCode) {
     _locale = langCode;
     notifyListeners();
   }
 
-  /// Регистрация пользователя
   Future<String?> register({
     required String username,
     required String email,
@@ -46,10 +93,15 @@ class AuthProvider extends ChangeNotifier {
       email: email,
       password: password,
     );
+    if (result == null) {
+      this.email = email;
+      _username = username;
+      _isLoggedIn = true;
+      notifyListeners();
+    }
     return result;
   }
 
-  /// Вход в систему
   Future<String?> login({
     required String identifier,
     required String password,
@@ -61,6 +113,7 @@ class AuthProvider extends ChangeNotifier {
 
     if (error == null) {
       _username = await _authService.getCurrentUsername();
+      email = await _authService.getCurrentEmail();
       _isLoggedIn = true;
       await _storage.write(key: _tokenKey, value: identifier);
       notifyListeners();
@@ -69,21 +122,19 @@ class AuthProvider extends ChangeNotifier {
     return error;
   }
 
-  /// Выход из системы
   Future<void> logout() async {
     await _authService.logout();
     await _storage.delete(key: _tokenKey);
     _isLoggedIn = false;
     _username = null;
+    email = null;
     notifyListeners();
   }
 
-  /// Проверка подтверждён ли email
   Future<bool> checkEmailVerified() async {
     return await _authService.isEmailVerified();
   }
 
-  /// Повторная отправка письма для подтверждения email
   Future<void> resendEmailVerification() async {
     await _authService.resendEmailVerification();
   }

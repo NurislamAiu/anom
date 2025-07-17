@@ -38,13 +38,13 @@ class AuthService {
   }
 
   Future<String?> loginUser({
-    required String identifier, // может быть email или username
+    required String identifier, 
     required String password,
   }) async {
     try {
       String email = identifier;
 
-      // Если это не email — считаем, что это username и ищем email
+      
       if (!identifier.contains('@')) {
         final query = await _db
             .collection('users')
@@ -111,4 +111,10 @@ class AuthService {
 
   String? getCurrentUserId() => _auth.currentUser?.uid;
   String? getCurrentUserEmail() => _auth.currentUser?.email;
+
+
+  Future<String?> getCurrentEmail() async {
+    final user = FirebaseAuth.instance.currentUser;
+    return user?.email;
+  }
 }
