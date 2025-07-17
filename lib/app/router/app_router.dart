@@ -10,6 +10,8 @@ import '../../features/group/presentation/group_screen.dart';
 import '../../features/home/presentation/home_screen.dart';
 import '../../features/onboarding/onboarding_screen.dart';
 import '../../features/profile/presentation/profile_screen.dart';
+import '../../features/profile/presentation/verification_business_screen.dart';
+import '../../features/profile/presentation/verification_personal_screen.dart';
 import '../../features/search/presentation/search_screen.dart';
 import '../../providers/auth_provider.dart';
 
@@ -92,6 +94,14 @@ class AppRouter {
             final groupId = state.pathParameters['groupId']!;
             return AddGroupMembersScreen(groupId: groupId);
           },
+        ),
+        GoRoute(
+          path: '/verify/personal',
+          builder: (_, __) => const VerificationPersonalScreen(),
+        ),
+        GoRoute(
+          path: '/verify/business',
+          builder: (_, __) => const VerificationBusinessScreen(),
         ),
       ],
     );

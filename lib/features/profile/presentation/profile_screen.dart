@@ -74,12 +74,21 @@ class ProfileScreen extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           Center(
-            child: Text(
-              username,
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                color: Colors.white,
-              ),
-            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  username,
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    color: Colors.white,
+                  ),
+                ),
+                if (profile.isVerified) ...[
+                  const SizedBox(width: 6),
+                  const Icon(Icons.verified, color: Colors.red, size: 20),
+                ],
+              ],
+            )
           ),
           ListTile(
             leading: const Icon(Icons.person_outline, color: Colors.white),
@@ -223,6 +232,49 @@ class ProfileScreen extends StatelessWidget {
                       child: const Text('Got it', style: TextStyle(color: Colors.blueAccent)),
                     ),
                   ],
+                ),
+              );
+            },
+            trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.white38),
+          ),
+
+          // Verification
+          ListTile(
+            leading: const Icon(Icons.verified_user, color: Colors.white),
+            title: const Text('Request Verification', style: TextStyle(color: Colors.white)),
+            subtitle: const Text('Apply for the blue checkmark', style: TextStyle(color: Colors.white54, fontSize: 12)),
+            onTap: () {
+              showModalBottomSheet(
+                context: context,
+                backgroundColor: Colors.grey[900],
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+                ),
+                builder: (_) => Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text('Choose Verification Type', style: TextStyle(color: Colors.white, fontSize: 18)),
+                      const SizedBox(height: 16),
+                      ListTile(
+                        leading: const Icon(Icons.person, color: Colors.white),
+                        title: const Text('Personal Identity', style: TextStyle(color: Colors.white)),
+                        onTap: () {
+                          Navigator.pop(context);
+                          context.push('/verify/personal');
+                        },
+                      ),
+                      ListTile(
+                        leading: const Icon(Icons.business, color: Colors.white),
+                        title: const Text('Business/Organization', style: TextStyle(color: Colors.white)),
+                        onTap: () {
+                          Navigator.pop(context);
+                          context.push('/verify/business');
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               );
             },

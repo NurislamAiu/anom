@@ -6,9 +6,13 @@ class ProfileProvider extends ChangeNotifier {
   String _avatarUrl = '';
 
   String get bio => _bio;
+
   String get avatarUrl => _avatarUrl;
 
-  /// Загрузка при старте (например, после логина)
+  bool _isVerified = false;
+
+  bool get isVerified => _isVerified;
+
   void loadInitialProfile({String? bio, String? avatarUrl}) {
     _bio = bio ?? '';
     _avatarUrl = avatarUrl ?? '';
@@ -22,15 +26,14 @@ class ProfileProvider extends ChangeNotifier {
         .get();
 
     if (snapshot.docs.isNotEmpty) {
-      final data = snapshot.docs.first.data();
-
-      _bio = data['bio'] ?? '';
-      _avatarUrl = data['avatarUrl'] ?? '';
+      final doc = snapshot.docs.first;
+      _bio = doc.data()?['bio'] ?? '';
+      _avatarUrl = doc.data()?['avatarUrl'] ?? '';
+      _isVerified = doc['isVerified'] ?? false;
       notifyListeners();
     }
   }
 
-  /// Обновление bio по username
   Future<void> updateBio(String username, String newBio) async {
     final query = await FirebaseFirestore.instance
         .collection('users')
@@ -41,17 +44,15 @@ class ProfileProvider extends ChangeNotifier {
     if (query.docs.isNotEmpty) {
       final docId = query.docs.first.id;
 
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(docId)
-          .update({'bio': newBio});
+      await FirebaseFirestore.instance.collection('users').doc(docId).update({
+        'bio': newBio,
+      });
 
       _bio = newBio;
       notifyListeners();
     }
   }
 
-  /// Обновление аватара по username (если нужно)
   Future<void> updateAvatar(String username, String newUrl) async {
     final query = await FirebaseFirestore.instance
         .collection('users')
@@ -62,10 +63,9 @@ class ProfileProvider extends ChangeNotifier {
     if (query.docs.isNotEmpty) {
       final docId = query.docs.first.id;
 
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(docId)
-          .update({'avatarUrl': newUrl});
+      await FirebaseFirestore.instance.collection('users').doc(docId).update({
+        'avatarUrl': newUrl,
+      });
 
       _avatarUrl = newUrl;
       notifyListeners();
