@@ -1,75 +1,90 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../features/auth/data/auth_service.dart';
-import '../features/auth/domain/user_model.dart';
 
 class AuthProvider extends ChangeNotifier {
-  static const _key = 'session_token';
+  static const _tokenKey = 'auth_token';
   final _storage = const FlutterSecureStorage();
   final _authService = AuthService();
 
-  String _locale = 'en';
+  String? _username;
+  String? get username => _username;
+
+  String _locale = 'ru';
   String get locale => _locale;
 
+  bool _isLoggedIn = false;
+  bool get isLoggedIn => _isLoggedIn;
+
+  /// Загрузка сессии при запуске приложения
+  Future<void> loadSession() async {
+    final token = await _storage.read(key: _tokenKey);
+    if (token != null) {
+      final user = await _authService.getCurrentUsername();
+      if (user != null) {
+        _isLoggedIn = true;
+        _username = user;
+        notifyListeners();
+      }
+    }
+  }
+
+  /// Установка языка
   void setLocale(String langCode) {
     _locale = langCode;
     notifyListeners();
   }
 
-  bool _isLoggedIn = false;
-  bool get isLoggedIn => _isLoggedIn;
+  /// Регистрация пользователя
+  Future<String?> register({
+    required String username,
+    required String email,
+    required String password,
+  }) async {
+    final result = await _authService.registerUser(
+      username: username,
+      email: email,
+      password: password,
+    );
+    return result;
+  }
 
-  String? _username;
-  String? get username => _username;
+  /// Вход в систему
+  Future<String?> login({
+    required String email,
+    required String password,
+  }) async {
+    final error = await _authService.loginUser(
+      email: email,
+      password: password,
+    );
 
-  Future<void> loadSession() async {
-    final token = await _storage.read(key: _key);
-    if (token != null) {
+    if (error == null) {
+      _username = await _authService.getCurrentUsername();
       _isLoggedIn = true;
-      _username = token;
+      await _storage.write(key: _tokenKey, value: email);
       notifyListeners();
     }
+
+    return error;
   }
 
-  Future<bool> login(String username, String password) async {
-    final user = await _authService.getUser(username);
-    if (user == null) return false;
-
-    final hashedInput = _authService.hashPassword(password);
-    if (hashedInput == user.passwordHash) {
-      _isLoggedIn = true;
-      _username = username;
-      await _storage.write(key: _key, value: username);
-      notifyListeners();
-      return true;
-    }
-    return false;
-  }
-
-  Future<String?> register(String username, String password) async {
-    final taken = await _authService.isUsernameTaken(username);
-    if (taken) return 'Username already taken';
-
-    await _authService.registerUser(username, password);
-    return null;
-  }
-
-  Future<bool> changePassword(String current, String newPassword) async {
-    final user = await _authService.getUser(_username!);
-    if (user == null) return false;
-
-    final currentHash = _authService.hashPassword(current);
-    if (user.passwordHash != currentHash) return false;
-
-    final newHash = _authService.hashPassword(newPassword);
-    await _authService.updateUserPassword(_username!, newHash);
-    return true;
-  }
-
+  /// Выход из системы
   Future<void> logout() async {
-    await _storage.delete(key: _key);
+    await _authService.logout();
+    await _storage.delete(key: _tokenKey);
     _isLoggedIn = false;
     _username = null;
     notifyListeners();
+  }
+
+  /// Проверка подтверждён ли email
+  Future<bool> checkEmailVerified() async {
+    return await _authService.isEmailVerified();
+  }
+
+  /// Повторная отправка письма для подтверждения email
+  Future<void> resendEmailVerification() async {
+    await _authService.resendEmailVerification();
   }
 }

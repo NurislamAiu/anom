@@ -27,12 +27,11 @@ class AppRouter {
         final isRegistering = state.uri.toString() == '/register';
         final isOnboarding = state.uri.toString() == '/onboarding';
 
-        // Если ещё не авторизован — можно показать login/register/onboarding
+
         if (!isLoggedIn && !isLoggingIn && !isRegistering && !isOnboarding) {
           return '/login';
         }
 
-        // Если уже вошёл — не показываем login/register/onboarding
         if (isLoggedIn && (isLoggingIn || isRegistering || isOnboarding)) {
           return '/home';
         }

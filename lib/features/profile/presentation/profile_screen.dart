@@ -310,17 +310,7 @@ class ProfileScreen extends StatelessWidget {
                   label: Text(t.cancel, style: const TextStyle(color: Colors.red)),
                 ),
                 ElevatedButton.icon(
-                  onPressed: () async {
-                    final ok = await auth.changePassword(current.text, newPass.text);
-                    Navigator.pop(context);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(ok ? t.passwordUpdated : t.wrongPassword),
-                        backgroundColor: Colors.grey[900],
-                        behavior: SnackBarBehavior.floating,
-                      ),
-                    );
-                  },
+                  onPressed: (){},
                   icon: const Icon(Icons.check, color: Colors.black),
                   label: Text(t.change, style: const TextStyle(color: Colors.black)),
                   style: ElevatedButton.styleFrom(
