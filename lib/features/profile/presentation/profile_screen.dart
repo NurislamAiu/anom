@@ -43,10 +43,15 @@ class ProfileScreen extends StatelessWidget {
             child: Stack(
               alignment: Alignment.bottomRight,
               children: [
-                const CircleAvatar(
+                CircleAvatar(
                   radius: 70,
                   backgroundColor: Colors.white10,
-                  child: Icon(Icons.person, size: 60, color: Colors.white70),
+                  backgroundImage: profile.avatarUrl.isNotEmpty
+                      ? NetworkImage(profile.avatarUrl)
+                      : null,
+                  child: profile.avatarUrl.isEmpty
+                      ? const Icon(Icons.person, size: 60, color: Colors.white70)
+                      : null,
                 ),
                 Container(
                   decoration: BoxDecoration(
@@ -438,9 +443,12 @@ class ProfileScreen extends StatelessWidget {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
-                onPressed: () {
-                  profile.updateBio(controller.text.trim());
-                  Navigator.pop(context);
+                onPressed: () async {
+                  final username = context.read<AuthProvider>().username;
+                  if (username != null) {
+                    Navigator.pop(context);
+                    await profile.updateBio(username, controller.text.trim());
+                  }
                 },
                 icon: const Icon(Icons.edit, color: Colors.black),
                 label: const Text('Save', style: TextStyle(color: Colors.black)),

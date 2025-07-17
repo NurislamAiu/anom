@@ -9,6 +9,8 @@ import '../../../../providers/chat_provider.dart';
 import 'package:intl/intl.dart';
 
 import '../../../providers/group_provider.dart';
+import '../../../providers/profile_provider.dart';
+import '../../../providers/user_cache_provider.dart';
 import '../../group/domain/group_chat_model.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -62,10 +64,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             padding: const EdgeInsets.symmetric(horizontal: 12),
             child: GestureDetector(
               onTap: () => context.go('/profile'),
-              child: const CircleAvatar(
+              child: CircleAvatar(
                 radius: 26,
                 backgroundColor: Colors.white10,
-                child: Icon(Icons.person, color: Colors.white70),
+                backgroundImage: context.watch<ProfileProvider>().avatarUrl.isNotEmpty
+                    ? NetworkImage(context.watch<ProfileProvider>().avatarUrl)
+                    : null,
+                child: context.watch<ProfileProvider>().avatarUrl.isEmpty
+                    ? const Icon(Icons.person, color: Colors.white70)
+                    : null,
               ),
             ),
           ),
@@ -128,7 +135,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           chats.isEmpty
               ? const Center(
                   child: Text(
-                    '🔒 No secure chats yet',
+                    'No secure chats yet',
                     style: TextStyle(color: Colors.grey),
                   ),
                 )
@@ -164,16 +171,24 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           horizontal: 16,
                           vertical: 14,
                         ),
-                        leading: CircleAvatar(
-                          radius: 24,
-                          backgroundColor: Colors.white12,
-                          child: Text(
-                            chatWith[0].toUpperCase(),
-                            style: const TextStyle(
-                              fontSize: 20,
-                              color: Colors.white,
-                            ),
-                          ),
+                        leading: FutureBuilder(
+                          future: context.read<UserCacheProvider>().loadAvatar(chatWith),
+                          builder: (_, __) {
+                            final avatar = context.watch<UserCacheProvider>().getAvatar(chatWith);
+                            return CircleAvatar(
+                              radius: 24,
+                              backgroundColor: Colors.white12,
+                              backgroundImage: (avatar != null && avatar.isNotEmpty)
+                                  ? NetworkImage(avatar)
+                                  : null,
+                              child: (avatar == null || avatar.isEmpty)
+                                  ? Text(
+                                chatWith[0].toUpperCase(),
+                                style: const TextStyle(fontSize: 20, color: Colors.white),
+                              )
+                                  : null,
+                            );
+                          },
                         ),
                         title: Row(
                           children: [
@@ -228,10 +243,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   },
                 ),
 
-          // --- Stories (пока заглушка) ---
+          // --- Stories  ---
           const Center(
             child: Text(
-              '📷 Stories coming soon',
+              'В Разработке',
               style: TextStyle(color: Colors.white54),
             ),
           ),

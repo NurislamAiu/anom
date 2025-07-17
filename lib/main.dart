@@ -2,6 +2,7 @@ import 'package:anom/providers/block_provider.dart';
 import 'package:anom/providers/chat_provider.dart';
 import 'package:anom/providers/group_provider.dart';
 import 'package:anom/providers/profile_provider.dart';
+import 'package:anom/providers/user_cache_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
@@ -24,6 +25,10 @@ void main() async {
 
   final authProvider = AuthProvider();
   await authProvider.loadSession();
+  final profileProvider = ProfileProvider();
+  if (authProvider.username != null) {
+    await profileProvider.loadProfile(authProvider.username!);
+  }
 
   runApp(
     MultiProvider(
@@ -31,7 +36,7 @@ void main() async {
         ChangeNotifierProvider<AuthProvider>.value(value: authProvider),
         ChangeNotifierProvider<SearchProvider>(create: (_) => SearchProvider()),
         ChangeNotifierProvider<ChatProvider>(create: (_) => ChatProvider()),
-        ChangeNotifierProvider<ProfileProvider>(create: (_) => ProfileProvider()),
+        ChangeNotifierProvider<ProfileProvider>(create: (_) => profileProvider),
         ChangeNotifierProxyProvider<AuthProvider, BlockProvider>(
           create: (_) => BlockProvider.loading(),
           update: (_, auth, previous) {
@@ -43,6 +48,7 @@ void main() async {
         ChangeNotifierProvider<GroupChatProvider>(
           create: (_) => GroupChatProvider(),
         ),
+        ChangeNotifierProvider(create: (_) => UserCacheProvider()),
       ],
       child: MyApp(showOnboarding: !seenOnboarding),
     ),

@@ -9,6 +9,7 @@ import 'package:intl/intl.dart';
 import '../../../../providers/chat_provider.dart';
 import '../../../../providers/auth_provider.dart';
 import '../../../providers/block_provider.dart';
+import '../../../providers/user_cache_provider.dart';
 
 class ChatScreen extends StatefulWidget {
   final String chatId;
@@ -56,16 +57,27 @@ class _ChatScreenState extends State<ChatScreen> {
           children: [
             GestureDetector(
               onTap: () => _showAvatarDialog(context),
-              child: CircleAvatar(
-                radius: 16,
-                backgroundColor: Colors.white12,
-                child: Text(
-                  otherUser.isNotEmpty ? otherUser[0].toUpperCase() : '?',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+              child: FutureBuilder(
+                future: context.read<UserCacheProvider>().loadAvatar(otherUser),
+                builder: (_, __) {
+                  final avatar = context.watch<UserCacheProvider>().getAvatar(otherUser);
+                  return CircleAvatar(
+                    radius: 16,
+                    backgroundColor: Colors.white12,
+                    backgroundImage: (avatar != null && avatar.isNotEmpty)
+                        ? NetworkImage(avatar)
+                        : null,
+                    child: (avatar == null || avatar.isEmpty)
+                        ? Text(
+                      otherUser.isNotEmpty ? otherUser[0].toUpperCase() : '?',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    )
+                        : null,
+                  );
+                },
               ),
             ),
             const SizedBox(width: 8),
@@ -468,7 +480,7 @@ class _ChatScreenState extends State<ChatScreen> {
     final text = controller.text.trim();
     if (text.isEmpty) return;
 
-    controller.clear(); // 👈 очищаем до await
+    controller.clear();
 
     await context.read<ChatProvider>().sendMessage(
       chatId: widget.chatId,
@@ -486,6 +498,12 @@ class _ChatScreenState extends State<ChatScreen> {
   void _showAvatarDialog(BuildContext context) {
     final currentUser = context.read<AuthProvider>().username ?? 'user';
     final otherUser = widget.chatId.split('_').firstWhere((u) => u != currentUser);
+
+    final userCache = Provider.of<UserCacheProvider>(context, listen: false);
+
+    userCache.loadAvatar(otherUser);
+
+    final avatarUrl = userCache.getAvatar(otherUser);
 
     showGeneralDialog(
       context: context,
@@ -512,14 +530,19 @@ class _ChatScreenState extends State<ChatScreen> {
             child: CircleAvatar(
               radius: 100,
               backgroundColor: Colors.transparent,
-              child: Text(
-                otherUser.isNotEmpty ? otherUser[0].toUpperCase() : '?',
+              backgroundImage: (avatarUrl != null && avatarUrl.isNotEmpty)
+                  ? NetworkImage(avatarUrl)
+                  : null,
+              child: (avatarUrl == null || avatarUrl.isEmpty)
+                  ? Text(
+                otherUser[0].toUpperCase(),
                 style: const TextStyle(
                   fontSize: 100,
                   color: Colors.white70,
                   fontWeight: FontWeight.bold,
                 ),
-              ),
+              )
+                  : null,
             ),
           ),
         );
