@@ -23,6 +23,9 @@ class AuthService {
         'username': username,
         'email': email,
         'createdAt': FieldValue.serverTimestamp(),
+        'isVerified': false,
+        'bio': '',
+        'avatarUrl': '',
       });
 
       await credentials.user?.sendEmailVerification();
