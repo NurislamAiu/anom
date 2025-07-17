@@ -38,10 +38,25 @@ class AuthService {
   }
 
   Future<String?> loginUser({
-    required String email,
+    required String identifier, // может быть email или username
     required String password,
   }) async {
     try {
+      String email = identifier;
+
+      // Если это не email — считаем, что это username и ищем email
+      if (!identifier.contains('@')) {
+        final query = await _db
+            .collection('users')
+            .where('username', isEqualTo: identifier)
+            .limit(1)
+            .get();
+
+        if (query.docs.isEmpty) return 'User not found';
+
+        email = query.docs.first.data()['email'];
+      }
+
       final credentials = await _auth.signInWithEmailAndPassword(
         email: email,
         password: password,

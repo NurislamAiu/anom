@@ -22,9 +22,10 @@ class ProfileProvider extends ChangeNotifier {
         .get();
 
     if (snapshot.docs.isNotEmpty) {
-      final doc = snapshot.docs.first;
-      _bio = doc['bio'] ?? '';
-      _avatarUrl = doc.data()?['avatarUrl'] ?? '';
+      final data = snapshot.docs.first.data();
+
+      _bio = data['bio'] ?? '';
+      _avatarUrl = data['avatarUrl'] ?? '';
       notifyListeners();
     }
   }

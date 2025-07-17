@@ -51,18 +51,18 @@ class AuthProvider extends ChangeNotifier {
 
   /// Вход в систему
   Future<String?> login({
-    required String email,
+    required String identifier,
     required String password,
   }) async {
     final error = await _authService.loginUser(
-      email: email,
+      identifier: identifier,
       password: password,
     );
 
     if (error == null) {
       _username = await _authService.getCurrentUsername();
       _isLoggedIn = true;
-      await _storage.write(key: _tokenKey, value: email);
+      await _storage.write(key: _tokenKey, value: identifier);
       notifyListeners();
     }
 

@@ -13,8 +13,9 @@ class LoginScreen extends StatefulWidget {
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
+
 class _LoginScreenState extends State<LoginScreen> {
-  final emailController = TextEditingController();
+  final identifierController = TextEditingController(); // email or username
   final passwordController = TextEditingController();
   String error = '';
   bool isLoading = false;
@@ -34,41 +35,28 @@ class _LoginScreenState extends State<LoginScreen> {
               Image.asset('assets/logo.png', height: MediaQuery.of(context).size.height * 0.12),
               const Text(
                 'Welcome Back!',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 26,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(color: Colors.white, fontSize: 26, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 6),
               const Text(
                 'Login to continue your secure chats',
-                style: TextStyle(
-                  color: Colors.white70,
-                  fontSize: 14,
-                ),
+                style: TextStyle(color: Colors.white70, fontSize: 14),
               ),
               const SizedBox(height: 32),
 
-              // Email
               TextField(
-                controller: emailController,
+                controller: identifierController,
                 style: const TextStyle(color: Colors.white),
                 decoration: InputDecoration(
-                  labelText: 'Email',
+                  labelText: 'Email or Username',
                   labelStyle: const TextStyle(color: Colors.white70),
                   filled: true,
                   fillColor: Colors.grey[900],
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                 ),
-                keyboardType: TextInputType.emailAddress,
               ),
-
               const SizedBox(height: 16),
 
-              // Password
               TextField(
                 controller: passwordController,
                 obscureText: true,
@@ -78,9 +66,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   labelStyle: const TextStyle(color: Colors.white70),
                   filled: true,
                   fillColor: Colors.grey[900],
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                 ),
               ),
 
@@ -90,13 +76,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 alignment: Alignment.centerRight,
                 child: TextButton(
                   onPressed: _showForgotPasswordDialog,
-                  child: const Text(
-                    'Forgot Password?',
-                    style: TextStyle(color: Colors.blueAccent),
-                  ),
+                  child: const Text('Forgot Password?', style: TextStyle(color: Colors.blueAccent)),
                 ),
               ),
-
               const SizedBox(height: 8),
 
               SizedBox(
@@ -106,9 +88,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     backgroundColor: Colors.blueAccent,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
                   onPressed: isLoading
                       ? null
@@ -118,16 +98,21 @@ class _LoginScreenState extends State<LoginScreen> {
                       error = '';
                     });
 
-                    final email = emailController.text.trim();
+                    final identifier = identifierController.text.trim();
                     final password = passwordController.text.trim();
 
-                    final success = await auth.login(email: email, password: password);
+                    final result = await auth.login(
+                      identifier: identifier,
+                      password: password,
+                    );
+
                     setState(() => isLoading = false);
-                    if (success == true) {
+
+                    if (result == null) {
                       context.go('/home');
                     } else {
                       setState(() {
-                        error = 'Invalid credentials';
+                        error = result;
                       });
                     }
                   },
@@ -154,12 +139,8 @@ class _LoginScreenState extends State<LoginScreen> {
               if (error.isNotEmpty)
                 Padding(
                   padding: const EdgeInsets.only(top: 12),
-                  child: Text(
-                    error,
-                    style: const TextStyle(color: Colors.redAccent),
-                  ),
+                  child: Text(error, style: const TextStyle(color: Colors.redAccent)),
                 ),
-
               const SizedBox(height: 12),
 
               TextButton(
@@ -181,10 +162,7 @@ class _LoginScreenState extends State<LoginScreen> {
       context: context,
       builder: (_) => AlertDialog(
         backgroundColor: Colors.grey[900],
-        title: const Text(
-          'Forgot Password',
-          style: TextStyle(color: Colors.white),
-        ),
+        title: const Text('Forgot Password', style: TextStyle(color: Colors.white)),
         content: const Text(
           'To reset your password, please send an email to our support team:\n\n'
               '📩 Cyberwest.kz@gmail.com\n\n'
