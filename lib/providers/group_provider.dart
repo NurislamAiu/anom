@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import '../features/group/data/group_service.dart';
@@ -91,4 +92,9 @@ class GroupChatProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> renameGroup(String groupId, String newName) async {
+    final doc = FirebaseFirestore.instance.collection('groupChats').doc(groupId);
+    await doc.update({'groupName': newName});
+    notifyListeners();
+  }
 }

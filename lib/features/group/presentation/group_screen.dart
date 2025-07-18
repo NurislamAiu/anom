@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../../../providers/auth_provider.dart';
 import '../../../providers/group_provider.dart';
+import '../domain/group_chat_model.dart';
 import '../domain/group_message_model.dart';
 
 class GroupChatScreen extends StatefulWidget {
@@ -45,8 +46,8 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
       timestamp: Timestamp.now(),
     );
 
-    await context.read<GroupChatProvider>().sendMessage(widget.groupId, msg);
     _controller.clear();
+    await context.read<GroupChatProvider>().sendMessage(widget.groupId, msg);
     _scrollController.animateTo(
       0,
       duration: const Duration(milliseconds: 300),
@@ -59,18 +60,36 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
     final messages = context.watch<GroupChatProvider>().messages;
     final currentUser = context.read<AuthProvider>().username ?? '';
 
+    final group = context.read<GroupChatProvider>().groups.firstWhere(
+      (g) => g.groupId == widget.groupId,
+      orElse: () => GroupChat(
+        groupId: widget.groupId,
+        groupName: 'Групповой чат (не найден)',
+        participants: [],
+        isPinned: false,
+        createdAt: Timestamp.now(),
+      ),
+    );
+
+    if (group == null) {
+      return const Scaffold(
+        backgroundColor: Colors.black,
+        body: Center(
+          child: Text(
+            'Группа не найдена или была удалена',
+            style: TextStyle(color: Colors.white),
+          ),
+        ),
+      );
+    }
+
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
         title: GestureDetector(
           onTap: () => context.push('/group_info/${widget.groupId}'),
           child: Text(
-            context
-                    .read<GroupChatProvider>()
-                    .groups
-                    .firstWhere((g) => g.groupId == widget.groupId)
-                    .groupName ??
-                'Групповой чат',
+            group.groupName,
             style: const TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.bold,
@@ -80,9 +99,9 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
         ),
         leading: IconButton(
           onPressed: () => context.go('/home'),
-          icon: Icon(Icons.arrow_back_ios),
+          icon: const Icon(Icons.arrow_back_ios),
         ),
-        actions: [IconButton(onPressed: () {}, icon: Icon(Iconsax.call))],
+        actions: [IconButton(onPressed: () {}, icon: const Icon(Iconsax.call))],
         backgroundColor: Colors.black,
         foregroundColor: Colors.white,
       ),
