@@ -6,29 +6,48 @@ class BlockProvider extends ChangeNotifier {
   final String? currentUser;
 
   final Set<String> _blockedUsers = {};
+  final Set<String> _blockedByUsers = {};
+
   bool _isInitialized = false;
 
   BlockProvider(this.currentUser) {
     _init();
   }
 
-  BlockProvider.loading() : currentUser = null;
-
   Set<String> get blockedUsers => _blockedUsers;
+
+  Set<String> get blockedByUsers => _blockedByUsers;
+
   bool get isInitialized => _isInitialized;
+
+  BlockProvider.loading() : currentUser = null;
 
   Future<void> _init() async {
     if (currentUser == null || currentUser!.isEmpty) return;
 
-    final snapshot = await _firestore
+    final myBlocked = await _firestore
         .collection('blocked')
         .doc(currentUser)
         .collection('blockedUsers')
         .get();
-
     _blockedUsers.clear();
-    for (final doc in snapshot.docs) {
+    for (final doc in myBlocked.docs) {
       _blockedUsers.add(doc.id);
+    }
+
+    final blockedBy = await _firestore.collection('blocked').get();
+    _blockedByUsers.clear();
+    for (final userDoc in blockedBy.docs) {
+      final blockedList = await _firestore
+          .collection('blocked')
+          .doc(userDoc.id)
+          .collection('blockedUsers')
+          .doc(currentUser)
+          .get();
+
+      if (blockedList.exists) {
+        _blockedByUsers.add(userDoc.id);
+      }
     }
 
     _isInitialized = true;
@@ -36,6 +55,11 @@ class BlockProvider extends ChangeNotifier {
   }
 
   bool isBlocked(String targetUser) => _blockedUsers.contains(targetUser);
+
+  bool isBlockedBy(String targetUser) => _blockedByUsers.contains(targetUser);
+
+  bool isChatBlocked(String otherUser) =>
+      isBlocked(otherUser) || isBlockedBy(otherUser);
 
   Future<void> blockUser(String targetUser) async {
     if (currentUser == null) return;

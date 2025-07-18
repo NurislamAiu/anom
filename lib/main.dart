@@ -1,6 +1,7 @@
 import 'package:anom/providers/block_provider.dart';
 import 'package:anom/providers/chat_provider.dart';
 import 'package:anom/providers/group_provider.dart';
+import 'package:anom/providers/presence_provider.dart';
 import 'package:anom/providers/profile_provider.dart';
 import 'package:anom/providers/user_cache_provider.dart';
 import 'package:flutter/material.dart';
@@ -16,9 +17,7 @@ import 'firebase_options.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   final prefs = await SharedPreferences.getInstance();
   final seenOnboarding = prefs.getBool('seenOnboarding') ?? false;
@@ -37,6 +36,9 @@ void main() async {
         ChangeNotifierProvider<SearchProvider>(create: (_) => SearchProvider()),
         ChangeNotifierProvider<ChatProvider>(create: (_) => ChatProvider()),
         ChangeNotifierProvider<ProfileProvider>(create: (_) => profileProvider),
+        ChangeNotifierProvider<GroupChatProvider>(
+          create: (_) => GroupChatProvider(),
+        ),
         ChangeNotifierProxyProvider<AuthProvider, BlockProvider>(
           create: (_) => BlockProvider.loading(),
           update: (_, auth, previous) {
@@ -45,10 +47,10 @@ void main() async {
             return BlockProvider(username);
           },
         ),
-        ChangeNotifierProvider<GroupChatProvider>(
-          create: (_) => GroupChatProvider(),
-        ),
         ChangeNotifierProvider(create: (_) => UserCacheProvider()),
+        ChangeNotifierProvider(
+          create: (_) => PresenceProvider(authProvider.username),
+        ),
       ],
       child: MyApp(showOnboarding: !seenOnboarding),
     ),

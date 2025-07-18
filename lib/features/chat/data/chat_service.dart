@@ -102,4 +102,29 @@ class ChatService {
       'pinned': pinned,
     });
   }
+
+  Future<bool> isUserVerified(String username) async {
+    final query = await FirebaseFirestore.instance
+        .collection('users')
+        .where('username', isEqualTo: username)
+        .limit(1)
+        .get();
+
+    if (query.docs.isEmpty) return false;
+
+    final data = query.docs.first.data();
+    return data['isVerified'] == true;
+  }
+
+
+  Future<DocumentSnapshot?> getUserDocByUsername(String username) async {
+    final snapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .where('username', isEqualTo: username)
+        .limit(1)
+        .get();
+
+    if (snapshot.docs.isEmpty) return null;
+    return snapshot.docs.first;
+  }
 }

@@ -83,4 +83,16 @@ class ChatProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  final Map<String, bool> _verificityCache = {};
+
+  Future<bool> isUserVerified(String username) async {
+    if (_verificityCache.containsKey(username)) {
+      return _verificityCache[username]!;
+    }
+
+    final isVerified = await _chatService.isUserVerified(username);
+    _verificityCache[username] = isVerified;
+    return isVerified;
+  }
 }
