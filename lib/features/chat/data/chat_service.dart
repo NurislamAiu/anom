@@ -31,7 +31,7 @@ class ChatService {
         .snapshots()
         .map(
           (snapshot) => snapshot.docs
-          .map((doc) => ChatMessage.fromJson(doc.data(), doc.id)) // ← передаём doc.id
+          .map((doc) => ChatMessage.fromJson(doc.data(), doc.id))
           .toList(),
     );
   }
@@ -41,7 +41,7 @@ class ChatService {
         .collection('messages')
         .doc(chatId)
         .collection('messages')
-        .doc(message.id.isEmpty ? null : message.id);
+        .doc();
 
     final docId = docRef.id;
 
@@ -55,9 +55,15 @@ class ChatService {
 
     await docRef.set(msgWithId.toJson());
 
+    final chatDoc = await _db.collection('chats').doc(chatId).get();
+    final participants = List<String>.from(chatDoc.data()?['participants'] ?? []);
+    final receiver = participants.firstWhere((u) => u != message.sender, orElse: () => '');
+
     await _db.collection('chats').doc(chatId).set({
       'lastMessage': message.text,
       'updatedAt': FieldValue.serverTimestamp(),
+      'participants': participants.isEmpty ? [message.sender, receiver] : participants,
+      'unreadBy': FieldValue.arrayUnion([receiver]),
     }, SetOptions(merge: true));
   }
 
@@ -86,7 +92,7 @@ class ChatService {
   }
 
   Future<List<Map<String, dynamic>>> getUserChats(String username) async {
-    final snapshot = await FirebaseFirestore.instance
+    final snapshot = await _db
         .collection('chats')
         .where('participants', arrayContains: username)
         .get();
@@ -96,17 +102,39 @@ class ChatService {
       return {
         'chatId': doc.id,
         'lastMessage': data['lastMessage'],
-        'updatedAt': (data['updatedAt'] as Timestamp).toDate(),
+        'updatedAt': (data['updatedAt'] as Timestamp?)?.toDate(),
         'pinned': data['pinned'] ?? false,
         'participants': List<String>.from(data['participants'] ?? []),
+        'unreadBy': List<String>.from(data['unreadBy'] ?? []),
       };
     }).toList();
   }
 
-  Future<void> deleteChat(String chatId) async {
-    final batch = FirebaseFirestore.instance.batch();
+  Stream<List<Map<String, dynamic>>> streamUserChats(String username) {
+    return _db
+        .collection('chats')
+        .where('participants', arrayContains: username)
+        .orderBy('updatedAt', descending: true)
+        .snapshots()
+        .map((snapshot) {
+      return snapshot.docs.map((doc) {
+        final data = doc.data();
+        return {
+          'chatId': doc.id,
+          'lastMessage': data['lastMessage'],
+          'updatedAt': (data['updatedAt'] as Timestamp?)?.toDate(),
+          'pinned': data['pinned'] ?? false,
+          'participants': List<String>.from(data['participants'] ?? []),
+          'unreadBy': List<String>.from(data['unreadBy'] ?? []),
+        };
+      }).toList();
+    });
+  }
 
-    final messagesRef = FirebaseFirestore.instance
+  Future<void> deleteChat(String chatId) async {
+    final batch = _db.batch();
+
+    final messagesRef = _db
         .collection('messages')
         .doc(chatId)
         .collection('messages');
@@ -116,12 +144,10 @@ class ChatService {
       batch.delete(doc.reference);
     }
 
-    final chatDoc = FirebaseFirestore.instance.collection('chats').doc(chatId);
+    final chatDoc = _db.collection('chats').doc(chatId);
     batch.delete(chatDoc);
 
-    final chatMessagesDoc = FirebaseFirestore.instance
-        .collection('messages')
-        .doc(chatId);
+    final chatMessagesDoc = _db.collection('messages').doc(chatId);
     batch.delete(chatMessagesDoc);
 
     await batch.commit();
@@ -132,13 +158,13 @@ class ChatService {
   }
 
   Future<void> togglePinChat(String chatId, bool pinned) async {
-    await FirebaseFirestore.instance.collection('chats').doc(chatId).update({
+    await _db.collection('chats').doc(chatId).update({
       'pinned': pinned,
     });
   }
 
   Future<bool> isUserVerified(String username) async {
-    final query = await FirebaseFirestore.instance
+    final query = await _db
         .collection('users')
         .where('username', isEqualTo: username)
         .limit(1)
@@ -151,7 +177,7 @@ class ChatService {
   }
 
   Future<DocumentSnapshot?> getUserDocByUsername(String username) async {
-    final snapshot = await FirebaseFirestore.instance
+    final snapshot = await _db
         .collection('users')
         .where('username', isEqualTo: username)
         .limit(1)
@@ -162,15 +188,15 @@ class ChatService {
   }
 
   Future<void> updateMessageStatus(
-    String chatId,
-    ChatMessage msg,
-    String newStatus,
-  ) async {
+      String chatId,
+      ChatMessage msg,
+      String newStatus,
+      ) async {
     final query = await _db
         .collection('messages')
         .doc(chatId)
         .collection('messages')
-        .where('timestamp', isEqualTo: msg.timestamp.toIso8601String())
+        .where('timestamp', isEqualTo: Timestamp.fromDate(msg.timestamp)) // ← исправлено
         .where('sender', isEqualTo: msg.sender)
         .limit(1)
         .get();
@@ -178,7 +204,16 @@ class ChatService {
     if (query.docs.isEmpty) return;
 
     final docRef = query.docs.first.reference;
+
     await docRef.update({'status': newStatus});
+
+    // 👁️ Дополнительно (по желанию): обновляем статус чата
+    if (newStatus == 'read') {
+      await _db.collection('chats').doc(chatId).update({
+        'unreadBy': FieldValue.arrayRemove([msg.sender]), // или msg.receiver, если логика другая
+      });
+    }
   }
+
 
 }

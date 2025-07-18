@@ -4,10 +4,10 @@ import 'package:iconsax/iconsax.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:uuid/uuid.dart';
-import '../../../../providers/auth_provider.dart';
-import '../../../../providers/chat_provider.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../providers/auth_provider.dart';
+import '../../../../providers/chat_provider.dart';
 import '../../../providers/group_provider.dart';
 import '../../../providers/profile_provider.dart';
 import '../../../providers/user_cache_provider.dart';
@@ -22,16 +22,27 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   late final TabController _tabController;
+  late final ChatProvider _chatProvider;
 
   @override
   void initState() {
     super.initState();
     final username = context.read<AuthProvider>().username;
+    _chatProvider = context.read<ChatProvider>();
+
     if (username != null) {
-      context.read<ChatProvider>().loadUserChats(username);
+      _chatProvider.startChatListListener(username);
       context.read<GroupChatProvider>().loadUserGroups(username);
     }
+
     _tabController = TabController(length: 3, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _chatProvider.disposeChatStream();
+    _tabController.dispose();
+    super.dispose();
   }
 
   @override
@@ -53,7 +64,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           indicatorColor: Colors.white,
           labelColor: Colors.white,
           unselectedLabelColor: Colors.white54,
-          tabs: [
+          tabs: const [
             Tab(icon: Icon(Iconsax.chart), text: 'Chats'),
             Tab(icon: Icon(Iconsax.camera), text: 'Stories'),
             Tab(icon: Icon(Iconsax.people), text: 'Groups'),
@@ -67,7 +78,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               child: CircleAvatar(
                 radius: 26,
                 backgroundColor: Colors.white10,
-                backgroundImage: context.watch<ProfileProvider>().avatarUrl.isNotEmpty
+                backgroundImage:
+                    context.watch<ProfileProvider>().avatarUrl.isNotEmpty
                     ? NetworkImage(context.watch<ProfileProvider>().avatarUrl)
                     : null,
                 child: context.watch<ProfileProvider>().avatarUrl.isEmpty
@@ -98,9 +110,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         'Найти пользователя',
                         style: TextStyle(color: Colors.white),
                       ),
-                      onTap: () {
-                        Future.microtask(() => Navigator.pop(context, 'search'));
-                      },
+                      onTap: () => Navigator.pop(context, 'search'),
                     ),
                     ListTile(
                       leading: const Icon(Iconsax.people, color: Colors.white),
@@ -108,9 +118,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         'Создать группу',
                         style: TextStyle(color: Colors.white),
                       ),
-                      onTap: () {
-                        Future.microtask(() => Navigator.pop(context, 'create_group'));
-                      },
+                      onTap: () => Navigator.pop(context, 'create_group'),
                     ),
                     const SizedBox(height: 16),
                   ],
@@ -131,7 +139,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       body: TabBarView(
         controller: _tabController,
         children: [
-          // --- Chats ---
           chats.isEmpty
               ? const Center(
                   child: Text(
@@ -172,20 +179,28 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           vertical: 14,
                         ),
                         leading: FutureBuilder(
-                          future: context.read<UserCacheProvider>().loadAvatar(chatWith),
+                          future: context.read<UserCacheProvider>().loadAvatar(
+                            chatWith,
+                          ),
                           builder: (_, __) {
-                            final avatar = context.watch<UserCacheProvider>().getAvatar(chatWith);
+                            final avatar = context
+                                .watch<UserCacheProvider>()
+                                .getAvatar(chatWith);
                             return CircleAvatar(
                               radius: 24,
                               backgroundColor: Colors.white12,
-                              backgroundImage: (avatar != null && avatar.isNotEmpty)
+                              backgroundImage:
+                                  (avatar != null && avatar.isNotEmpty)
                                   ? NetworkImage(avatar)
                                   : null,
                               child: (avatar == null || avatar.isEmpty)
                                   ? Text(
-                                chatWith[0].toUpperCase(),
-                                style: const TextStyle(fontSize: 20, color: Colors.white),
-                              )
+                                      chatWith[0].toUpperCase(),
+                                      style: const TextStyle(
+                                        fontSize: 20,
+                                        color: Colors.white,
+                                      ),
+                                    )
                                   : null,
                             );
                           },
@@ -235,6 +250,18 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                 fontSize: 11,
                               ),
                             ),
+                            const SizedBox(height: 6),
+                            if ((chat['unreadBy'] != null) &&
+                                chat['unreadBy'] is List &&
+                                (chat['unreadBy'] as List).contains(username))
+                              Container(
+                                width: 10,
+                                height: 10,
+                                decoration: const BoxDecoration(
+                                  color: Colors.greenAccent,
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
                           ],
                         ),
                         onTap: () => context.go('/chat/${chat['chatId']}'),
@@ -243,7 +270,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   },
                 ),
 
-          // --- Stories  ---
           const Center(
             child: Text(
               'В Разработке',
@@ -251,13 +277,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             ),
           ),
 
-          // --- Groups ---
           Consumer<GroupChatProvider>(
             builder: (context, groupProvider, _) {
               final groups = groupProvider.groups;
               if (groups.isEmpty) {
                 return const Center(
-                  child: Text('Групп ещё нет', style: TextStyle(color: Colors.white54)),
+                  child: Text(
+                    'Групп ещё нет',
+                    style: TextStyle(color: Colors.white54),
+                  ),
                 );
               }
 
@@ -265,12 +293,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 itemCount: groups.length,
                 itemBuilder: (_, i) {
                   final group = groups[i];
-                  final isPinned = group.isPinned;
-
                   return GestureDetector(
                     onTap: () => context.go('/group/${group.groupId}'),
                     child: Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      margin: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.grey[900],
                         borderRadius: BorderRadius.circular(16),
@@ -283,13 +312,18 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         ],
                       ),
                       child: ListTile(
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 14,
+                        ),
                         leading: CircleAvatar(
                           radius: 24,
                           backgroundColor: Colors.white10,
                           child: Icon(
-                            isPinned ? Iconsax.activity : Icons.group,
-                            color: isPinned ? Colors.amber : Colors.white70,
+                            group.isPinned ? Iconsax.activity : Icons.group,
+                            color: group.isPinned
+                                ? Colors.amber
+                                : Colors.white70,
                           ),
                         ),
                         title: Text(
@@ -302,9 +336,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         ),
                         subtitle: Text(
                           'Участники: ${group.participants.length}',
-                          style: const TextStyle(color: Colors.white60, fontSize: 13),
+                          style: const TextStyle(
+                            color: Colors.white60,
+                            fontSize: 13,
+                          ),
                         ),
-                        trailing: isPinned
+                        trailing: group.isPinned
                             ? const Icon(Iconsax.activity, color: Colors.amber)
                             : null,
                       ),
@@ -319,7 +356,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
-
   void _showCreateGroupDialog(BuildContext context) {
     final nameController = TextEditingController();
     bool isLoading = false;
@@ -332,10 +368,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         return StatefulBuilder(
           builder: (ctx, setState) {
             return Dialog(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
               backgroundColor: const Color(0xFF1E1E1E),
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 20,
+                ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -345,7 +386,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
-                        letterSpacing: 0.5,
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -357,7 +397,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         fillColor: Colors.white10,
                         hintText: 'Название группы',
                         hintStyle: const TextStyle(color: Colors.white38),
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 14,
+                        ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide.none,
@@ -370,61 +413,72 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       children: [
                         TextButton(
                           onPressed: () => Navigator.pop(ctx),
-                          child: const Text('Отмена', style: TextStyle(color: Colors.white60)),
+                          child: const Text(
+                            'Отмена',
+                            style: TextStyle(color: Colors.white60),
+                          ),
                         ),
                         const SizedBox(width: 12),
                         ElevatedButton(
                           onPressed: isLoading
                               ? null
                               : () async {
-                            final name = nameController.text.trim();
-                            if (name.isEmpty) return;
+                                  final name = nameController.text.trim();
+                                  if (name.isEmpty) return;
+                                  setState(() => isLoading = true);
 
-                            setState(() => isLoading = true);
+                                  try {
+                                    final currentUser = context
+                                        .read<AuthProvider>()
+                                        .username!;
+                                    final groupId = const Uuid().v4();
+                                    final newGroup = GroupChat(
+                                      groupId: groupId,
+                                      groupName: name,
+                                      participants: [currentUser],
+                                      createdAt: Timestamp.now(),
+                                    );
 
-                            try {
-                              final currentUser = context.read<AuthProvider>().username!;
-                              final groupId = const Uuid().v4();
-                              final newGroup = GroupChat(
-                                groupId: groupId,
-                                groupName: name,
-                                participants: [currentUser],
-                                createdAt: Timestamp.now(),
-                              );
+                                    await context
+                                        .read<GroupChatProvider>()
+                                        .createGroup(newGroup);
 
-                              await context.read<GroupChatProvider>().createGroup(newGroup);
-
-                              if (context.mounted) {
-                                Navigator.pop(context);
-                                context.go('/group/$groupId');
-                              }
-                            } catch (_) {
-                              setState(() => isLoading = false);
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Ошибка при создании группы'),
-                                  backgroundColor: Colors.redAccent,
-                                ),
-                              );
-                            }
-                          },
+                                    if (context.mounted) {
+                                      Navigator.pop(context);
+                                      context.go('/group/$groupId');
+                                    }
+                                  } catch (_) {
+                                    setState(() => isLoading = false);
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text(
+                                          'Ошибка при создании группы',
+                                        ),
+                                        backgroundColor: Colors.redAccent,
+                                      ),
+                                    );
+                                  }
+                                },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.white,
                             foregroundColor: Colors.black,
-                            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 24,
+                              vertical: 14,
+                            ),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),
                           ),
                           child: isLoading
                               ? const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Colors.black,
-                            ),
-                          )
+                                  height: 20,
+                                  width: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Colors.black,
+                                  ),
+                                )
                               : const Text('Создать'),
                         ),
                       ],

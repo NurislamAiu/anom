@@ -1,11 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ChatMessage {
-  final String id; // <-- нужно для update/delete
+  final String id;
   final String sender;
   final String text;
   final DateTime timestamp;
-  final String status; // sent, delivered, read
+  final String status;
   final bool edited;
 
   ChatMessage({

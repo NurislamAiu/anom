@@ -33,16 +33,24 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    currentUser = context.read<AuthProvider>().username ?? 'unknown';
-    context.read<ChatProvider>().startListening(widget.chatId, currentUser);
+
+    currentUser = context.read<AuthProvider>().username!; // ✅ <--- добавь это
+
+    final chatId = widget.chatId;
+
+    context.read<ChatProvider>().startListening(chatId, currentUser);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<ChatProvider>().markMessagesAsRead(chatId, currentUser);
+    });
 
     _popupAnimationController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 200),
+      duration: const Duration(milliseconds: 300),
     );
     _popupScaleAnimation = CurvedAnimation(
       parent: _popupAnimationController,
-      curve: Curves.linearToEaseOut,
+      curve: Curves.easeOutBack,
     );
   }
 
@@ -101,12 +109,12 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                   child: GestureDetector(
                     onLongPressStart: isMe
                         ? (details) => _showPopupMenu(
-                            context,
-                            details.globalPosition,
-                            msg.id,
-                            msg.text,
-                            sender: msg.sender,
-                          )
+                      context,
+                      details.globalPosition,
+                      msg.id,
+                      msg.text,
+                      sender: msg.sender,
+                    )
                         : null,
                     child: Container(
                       margin: const EdgeInsets.symmetric(
@@ -252,12 +260,12 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   }
 
   void _showPopupMenu(
-    BuildContext context,
-    Offset position,
-    String messageId,
-    String text, {
-    required String sender,
-  }) {
+      BuildContext context,
+      Offset position,
+      String messageId,
+      String text, {
+        required String sender,
+      }) {
     _removeOverlay();
     final screenSize = MediaQuery.of(context).size;
     const double menuWidth = 220;
@@ -372,11 +380,11 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   }
 
   Widget _popupItem(
-    IconData icon,
-    String text,
-    VoidCallback onTap, {
-    Color color = Colors.white,
-  }) {
+      IconData icon,
+      String text,
+      VoidCallback onTap, {
+        Color color = Colors.white,
+      }) {
     return ListTile(
       leading: Icon(icon, color: color),
       title: Text(text, style: TextStyle(color: color)),
