@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class ChatMessage {
   final String id; // <-- нужно для update/delete
   final String sender;
@@ -28,7 +30,9 @@ class ChatMessage {
       id: id,
       sender: json['sender'],
       text: json['text'],
-      timestamp: DateTime.parse(json['timestamp']),
+      timestamp: (json['timestamp'] is Timestamp)
+          ? (json['timestamp'] as Timestamp).toDate()
+          : DateTime.tryParse(json['timestamp'] ?? '') ?? DateTime.now(),
       status: json['status'] ?? 'sent',
       edited: json['edited'] ?? false,
     );
