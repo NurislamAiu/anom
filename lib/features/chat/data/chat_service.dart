@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../domain/chat_model.dart';
-import '../domain/message_model.dart';
 
 class ChatService {
   final _db = FirebaseFirestore.instance;
@@ -32,25 +31,58 @@ class ChatService {
         .snapshots()
         .map(
           (snapshot) => snapshot.docs
-              .map((doc) => ChatMessage.fromJson(doc.data()))
-              .toList(),
-        );
+          .map((doc) => ChatMessage.fromJson(doc.data(), doc.id)) // ← передаём doc.id
+          .toList(),
+    );
   }
 
   Future<void> sendMessage(String chatId, ChatMessage message) async {
-    final messageRef = _db
+    final docRef = _db
         .collection('messages')
         .doc(chatId)
-        .collection('messages');
+        .collection('messages')
+        .doc(message.id.isEmpty ? null : message.id);
 
+    final docId = docRef.id;
 
-    await messageRef.add(message.toJson());
+    final msgWithId = ChatMessage(
+      id: docId,
+      sender: message.sender,
+      text: message.text,
+      timestamp: message.timestamp,
+      status: message.status,
+    );
 
+    await docRef.set(msgWithId.toJson());
 
     await _db.collection('chats').doc(chatId).set({
       'lastMessage': message.text,
       'updatedAt': FieldValue.serverTimestamp(),
     }, SetOptions(merge: true));
+  }
+
+  Future<void> updateMessage(String chatId, String messageId, String newText) async {
+    final messageRef = _db
+        .collection('messages')
+        .doc(chatId)
+        .collection('messages')
+        .doc(messageId);
+
+    await messageRef.update({
+      'text': newText,
+      'status': 'edited',
+      'timestamp': FieldValue.serverTimestamp(),
+    });
+  }
+
+  Future<void> deleteMessage(String chatId, String messageId) async {
+    final messageRef = _db
+        .collection('messages')
+        .doc(chatId)
+        .collection('messages')
+        .doc(messageId);
+
+    await messageRef.delete();
   }
 
   Future<List<Map<String, dynamic>>> getUserChats(String username) async {
@@ -87,7 +119,9 @@ class ChatService {
     final chatDoc = FirebaseFirestore.instance.collection('chats').doc(chatId);
     batch.delete(chatDoc);
 
-    final chatMessagesDoc = FirebaseFirestore.instance.collection('messages').doc(chatId);
+    final chatMessagesDoc = FirebaseFirestore.instance
+        .collection('messages')
+        .doc(chatId);
     batch.delete(chatMessagesDoc);
 
     await batch.commit();
@@ -116,7 +150,6 @@ class ChatService {
     return data['isVerified'] == true;
   }
 
-
   Future<DocumentSnapshot?> getUserDocByUsername(String username) async {
     final snapshot = await FirebaseFirestore.instance
         .collection('users')
@@ -127,4 +160,25 @@ class ChatService {
     if (snapshot.docs.isEmpty) return null;
     return snapshot.docs.first;
   }
+
+  Future<void> updateMessageStatus(
+    String chatId,
+    ChatMessage msg,
+    String newStatus,
+  ) async {
+    final query = await _db
+        .collection('messages')
+        .doc(chatId)
+        .collection('messages')
+        .where('timestamp', isEqualTo: msg.timestamp.toIso8601String())
+        .where('sender', isEqualTo: msg.sender)
+        .limit(1)
+        .get();
+
+    if (query.docs.isEmpty) return;
+
+    final docRef = query.docs.first.reference;
+    await docRef.update({'status': newStatus});
+  }
+
 }
