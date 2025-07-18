@@ -1,4 +1,4 @@
-// ChatScreen.dart
+
 import 'dart:ui';
 import 'package:anom/features/chat/presentation/widgets/chat_app_bar.dart';
 import 'package:flutter/material.dart';
@@ -35,7 +35,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   void initState() {
     super.initState();
 
-    currentUser = context.read<AuthProvider>().username!; // ✅ <--- добавь это
+    currentUser = context.read<AuthProvider>().username!; 
 
     final chatId = widget.chatId;
 
