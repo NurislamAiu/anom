@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:anom/features/chat/presentation/widgets/chat_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:loading_indicator/loading_indicator.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:go_router/go_router.dart';
@@ -94,7 +95,22 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
               ),
             ),
           Expanded(
-            child: ListView.builder(
+            child: messages.isEmpty
+                ? Container(
+              color: Colors.black.withOpacity(0.5),
+              child: const Center(
+                child: SizedBox(
+                  width: 60,
+                  height: 60,
+                  child: LoadingIndicator(
+                    indicatorType: Indicator.ballSpinFadeLoader,
+                    colors: [Colors.white],
+                    strokeWidth: 2,
+                  ),
+                ),
+              ),
+            )
+                : ListView.builder(
               controller: scrollController,
               reverse: true,
               itemCount: messages.length,
@@ -103,9 +119,8 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                 final isMe = msg.sender == currentUser;
 
                 return Align(
-                  alignment: isMe
-                      ? Alignment.centerRight
-                      : Alignment.centerLeft,
+                  alignment:
+                  isMe ? Alignment.centerRight : Alignment.centerLeft,
                   child: GestureDetector(
                     onLongPressStart: isMe
                         ? (details) => _showPopupMenu(
@@ -118,9 +133,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                         : null,
                     child: Container(
                       margin: const EdgeInsets.symmetric(
-                        vertical: 4,
-                        horizontal: 10,
-                      ),
+                          vertical: 4, horizontal: 10),
                       padding: const EdgeInsets.all(12),
                       constraints: const BoxConstraints(maxWidth: 300),
                       decoration: BoxDecoration(
@@ -156,11 +169,11 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                               if (isMe) ...[
                                 const SizedBox(width: 4),
                                 AnimatedSwitcher(
-                                  duration: const Duration(milliseconds: 300),
+                                  duration:
+                                  const Duration(milliseconds: 300),
                                   child: _getStatusIcon(msg.status),
-                                  switchInCurve: Curves.easeInOut,
-                                  switchOutCurve: Curves.easeInOut,
-                                  transitionBuilder: (child, animation) {
+                                  transitionBuilder:
+                                      (child, animation) {
                                     return ScaleTransition(
                                       scale: animation,
                                       child: child,
@@ -266,6 +279,8 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
       String text, {
         required String sender,
       }) {
+
+    FocusScope.of(context).unfocus();
     _removeOverlay();
     final screenSize = MediaQuery.of(context).size;
     const double menuWidth = 220;

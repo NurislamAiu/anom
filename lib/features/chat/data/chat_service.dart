@@ -31,9 +31,9 @@ class ChatService {
         .snapshots()
         .map(
           (snapshot) => snapshot.docs
-          .map((doc) => ChatMessage.fromJson(doc.data(), doc.id))
-          .toList(),
-    );
+              .map((doc) => ChatMessage.fromJson(doc.data(), doc.id))
+              .toList(),
+        );
   }
 
   Future<void> sendMessage(String chatId, ChatMessage message) async {
@@ -56,18 +56,29 @@ class ChatService {
     await docRef.set(msgWithId.toJson());
 
     final chatDoc = await _db.collection('chats').doc(chatId).get();
-    final participants = List<String>.from(chatDoc.data()?['participants'] ?? []);
-    final receiver = participants.firstWhere((u) => u != message.sender, orElse: () => '');
+    final participants = List<String>.from(
+      chatDoc.data()?['participants'] ?? [],
+    );
+    final receiver = participants.firstWhere(
+      (u) => u != message.sender,
+      orElse: () => '',
+    );
 
     await _db.collection('chats').doc(chatId).set({
       'lastMessage': message.text,
       'updatedAt': FieldValue.serverTimestamp(),
-      'participants': participants.isEmpty ? [message.sender, receiver] : participants,
+      'participants': participants.isEmpty
+          ? [message.sender, receiver]
+          : participants,
       'unreadBy': FieldValue.arrayUnion([receiver]),
     }, SetOptions(merge: true));
   }
 
-  Future<void> updateMessage(String chatId, String messageId, String newText) async {
+  Future<void> updateMessage(
+    String chatId,
+    String messageId,
+    String newText,
+  ) async {
     final messageRef = _db
         .collection('messages')
         .doc(chatId)
@@ -117,18 +128,18 @@ class ChatService {
         .orderBy('updatedAt', descending: true)
         .snapshots()
         .map((snapshot) {
-      return snapshot.docs.map((doc) {
-        final data = doc.data();
-        return {
-          'chatId': doc.id,
-          'lastMessage': data['lastMessage'],
-          'updatedAt': (data['updatedAt'] as Timestamp?)?.toDate(),
-          'pinned': data['pinned'] ?? false,
-          'participants': List<String>.from(data['participants'] ?? []),
-          'unreadBy': List<String>.from(data['unreadBy'] ?? []),
-        };
-      }).toList();
-    });
+          return snapshot.docs.map((doc) {
+            final data = doc.data();
+            return {
+              'chatId': doc.id,
+              'lastMessage': data['lastMessage'],
+              'updatedAt': (data['updatedAt'] as Timestamp?)?.toDate(),
+              'pinned': data['pinned'] ?? false,
+              'participants': List<String>.from(data['participants'] ?? []),
+              'unreadBy': List<String>.from(data['unreadBy'] ?? []),
+            };
+          }).toList();
+        });
   }
 
   Future<void> deleteChat(String chatId) async {
@@ -158,9 +169,7 @@ class ChatService {
   }
 
   Future<void> togglePinChat(String chatId, bool pinned) async {
-    await _db.collection('chats').doc(chatId).update({
-      'pinned': pinned,
-    });
+    await _db.collection('chats').doc(chatId).update({'pinned': pinned});
   }
 
   Future<bool> isUserVerified(String username) async {
@@ -188,15 +197,15 @@ class ChatService {
   }
 
   Future<void> updateMessageStatus(
-      String chatId,
-      ChatMessage msg,
-      String newStatus,
-      ) async {
+    String chatId,
+    ChatMessage msg,
+    String newStatus,
+  ) async {
     final query = await _db
         .collection('messages')
         .doc(chatId)
         .collection('messages')
-        .where('timestamp', isEqualTo: Timestamp.fromDate(msg.timestamp)) // ← исправлено
+        .where('timestamp', isEqualTo: Timestamp.fromDate(msg.timestamp))
         .where('sender', isEqualTo: msg.sender)
         .limit(1)
         .get();
@@ -207,13 +216,10 @@ class ChatService {
 
     await docRef.update({'status': newStatus});
 
-    // 👁️ Дополнительно (по желанию): обновляем статус чата
     if (newStatus == 'read') {
       await _db.collection('chats').doc(chatId).update({
-        'unreadBy': FieldValue.arrayRemove([msg.sender]), // или msg.receiver, если логика другая
+        'unreadBy': FieldValue.arrayRemove([msg.sender]),
       });
     }
   }
-
-
 }
