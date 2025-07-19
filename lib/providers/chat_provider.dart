@@ -76,8 +76,7 @@ class ChatProvider extends ChangeNotifier {
     );
 
     await _chatService.sendMessage(chatId, msg);
-    _messages.add(msg);
-    notifyListeners();
+   
   }
 
   Future<void> sendMediaMessage({

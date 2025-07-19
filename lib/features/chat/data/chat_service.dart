@@ -19,8 +19,6 @@ class ChatService {
       'participants': participants,
       'lastMessage': '',
       'updatedAt': FieldValue.serverTimestamp(),
-      'isOnline': true,
-      'lastSeen': Timestamp.now(),
     });
   }
 

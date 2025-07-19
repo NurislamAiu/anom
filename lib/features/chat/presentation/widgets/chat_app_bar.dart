@@ -92,31 +92,39 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
                   );
                 },
               ),
-              StreamBuilder<DocumentSnapshot>(
-                stream: FirebaseFirestore.instance
-                    .collection('chats')
-                    .doc(chatId)
-                    .snapshots(),
-                builder: (context, snapshot) {
-                  if (!snapshot.hasData) {
-                    return const Text('Offline', style: TextStyle(color: Colors.grey));
+              FutureBuilder<String?>(
+                future: getUidByUsername(otherUser),
+                builder: (context, uidSnapshot) {
+                  if (!uidSnapshot.hasData) {
+                    return const Text('Offline', style: TextStyle(color: Colors.grey, fontSize: 12));
                   }
+                  final uid = uidSnapshot.data!;
+                  return StreamBuilder<DocumentSnapshot>(
+                    stream: FirebaseFirestore.instance
+                        .collection('users')
+                        .doc(uid)
+                        .snapshots(),
+                    builder: (context, snapshot) {
+                      if (!snapshot.hasData) {
+                        return const Text('Offline', style: TextStyle(color: Colors.grey, fontSize: 12));
+                      }
 
-                  final data = snapshot.data!.data() as Map<String, dynamic>?;
+                      final data = snapshot.data!.data() as Map<String, dynamic>?;
+                      final isOnline = data?['isOnline'] == true;
+                      final lastSeen = (data?['lastSeen'] as Timestamp?)?.toDate();
 
-                  final isOnline = data?['isOnline'] == true;
-                  final lastSeen = (data?['lastSeen'] as Timestamp?)?.toDate();
-
-                  return Text(
-                    isOnline
-                        ? 'Online'
-                        : lastSeen != null
-                        ? 'Last seen ${_timeAgo(lastSeen)}'
-                        : 'Offline',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: isOnline ? Colors.greenAccent : Colors.grey,
-                    ),
+                      return Text(
+                        isOnline
+                            ? 'Online'
+                            : lastSeen != null
+                            ? 'Last seen ${_timeAgo(lastSeen)}'
+                            : 'Offline',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: isOnline ? Colors.greenAccent : Colors.grey,
+                        ),
+                      );
+                    },
                   );
                 },
               ),
@@ -361,5 +369,15 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
         );
       },
     );
+  }
+  Future<String?> getUidByUsername(String username) async {
+    final query = await FirebaseFirestore.instance
+        .collection('users')
+        .where('username', isEqualTo: username)
+        .limit(1)
+        .get();
+
+    if (query.docs.isEmpty) return null;
+    return query.docs.first.id;
   }
 }
