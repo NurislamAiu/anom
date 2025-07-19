@@ -331,6 +331,150 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Отправить письмо для сброса'**
   String get sendResetEmail;
+
+  /// No description provided for @welcomeBack.
+  ///
+  /// In ru, this message translates to:
+  /// **'С возвращением!'**
+  String get welcomeBack;
+
+  /// No description provided for @loginSubtitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Войдите, чтобы продолжить безопасный чат'**
+  String get loginSubtitle;
+
+  /// No description provided for @emailOrUsername.
+  ///
+  /// In ru, this message translates to:
+  /// **'Email или имя пользователя'**
+  String get emailOrUsername;
+
+  /// No description provided for @password.
+  ///
+  /// In ru, this message translates to:
+  /// **'Пароль'**
+  String get password;
+
+  /// No description provided for @forgotPassword.
+  ///
+  /// In ru, this message translates to:
+  /// **'Забыли пароль?'**
+  String get forgotPassword;
+
+  /// No description provided for @forgotPasswordDialog.
+  ///
+  /// In ru, this message translates to:
+  /// **'Чтобы сбросить пароль, пожалуйста, напишите нам на почту:\n\nсyberwest.kz@gmail.com\n\nВаши личные данные останутся защищёнными и конфиденциальными.'**
+  String get forgotPasswordDialog;
+
+  /// No description provided for @login.
+  ///
+  /// In ru, this message translates to:
+  /// **'Войти'**
+  String get login;
+
+  /// No description provided for @dontHaveAccount.
+  ///
+  /// In ru, this message translates to:
+  /// **'Нет аккаунта? Зарегистрируйтесь'**
+  String get dontHaveAccount;
+
+  /// No description provided for @contactSupport.
+  ///
+  /// In ru, this message translates to:
+  /// **'Написать в поддержку'**
+  String get contactSupport;
+
+  /// No description provided for @createAccount.
+  ///
+  /// In ru, this message translates to:
+  /// **'Создать аккаунт'**
+  String get createAccount;
+
+  /// No description provided for @joinSubtitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Присоединяйтесь к самому безопасному мессенджеру'**
+  String get joinSubtitle;
+
+  /// No description provided for @username.
+  ///
+  /// In ru, this message translates to:
+  /// **'Имя пользователя'**
+  String get username;
+
+  /// No description provided for @email.
+  ///
+  /// In ru, this message translates to:
+  /// **'Эл. почта'**
+  String get email;
+
+  /// No description provided for @confirmPassword.
+  ///
+  /// In ru, this message translates to:
+  /// **'Подтвердите пароль'**
+  String get confirmPassword;
+
+  /// No description provided for @register.
+  ///
+  /// In ru, this message translates to:
+  /// **'Зарегистрироваться'**
+  String get register;
+
+  /// No description provided for @alreadyHaveAccount.
+  ///
+  /// In ru, this message translates to:
+  /// **'Уже есть аккаунт? Войти'**
+  String get alreadyHaveAccount;
+
+  /// No description provided for @fillAllFields.
+  ///
+  /// In ru, this message translates to:
+  /// **'Пожалуйста, заполните все поля'**
+  String get fillAllFields;
+
+  /// No description provided for @passwordTooShort.
+  ///
+  /// In ru, this message translates to:
+  /// **'Пароль должен быть не менее 8 символов'**
+  String get passwordTooShort;
+
+  /// No description provided for @passwordsDontMatch.
+  ///
+  /// In ru, this message translates to:
+  /// **'Пароли не совпадают'**
+  String get passwordsDontMatch;
+
+  /// No description provided for @confirmEmailTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'📧 Подтвердите почту'**
+  String get confirmEmailTitle;
+
+  /// No description provided for @confirmEmailDesc.
+  ///
+  /// In ru, this message translates to:
+  /// **'Вы действительно хотите зарегистрироваться с этой почтой?\n\n{email}'**
+  String confirmEmailDesc(Object email);
+
+  /// No description provided for @confirm.
+  ///
+  /// In ru, this message translates to:
+  /// **'Да, зарегистрироваться'**
+  String get confirm;
+
+  /// No description provided for @emailSent.
+  ///
+  /// In ru, this message translates to:
+  /// **'📨 Письмо отправлено'**
+  String get emailSent;
+
+  /// No description provided for @emailSentDesc.
+  ///
+  /// In ru, this message translates to:
+  /// **'На адрес {email} отправлено письмо с подтверждением.\n\nПожалуйста, проверьте входящие или папку спам.'**
+  String emailSentDesc(Object email);
 }
 
 class _AppLocalizationsDelegate

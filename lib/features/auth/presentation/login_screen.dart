@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:loading_indicator/loading_indicator.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../providers/auth_provider.dart';
-import 'package:url_launcher/url_launcher.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -13,9 +14,8 @@ class LoginScreen extends StatefulWidget {
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
-
 class _LoginScreenState extends State<LoginScreen> {
-  final identifierController = TextEditingController(); 
+  final identifierController = TextEditingController();
   final passwordController = TextEditingController();
   String error = '';
   bool isLoading = false;
@@ -23,6 +23,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final auth = context.read<AuthProvider>();
+    final t = AppLocalizations.of(context)!;
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -33,14 +34,14 @@ class _LoginScreenState extends State<LoginScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Image.asset('assets/logo.png', height: MediaQuery.of(context).size.height * 0.12),
-              const Text(
-                'Welcome Back!',
-                style: TextStyle(color: Colors.white, fontSize: 26, fontWeight: FontWeight.bold),
+              Text(
+                t.welcomeBack,
+                style: const TextStyle(color: Colors.white, fontSize: 26, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 6),
-              const Text(
-                'Login to continue your secure chats',
-                style: TextStyle(color: Colors.white70, fontSize: 14),
+              Text(
+                t.loginSubtitle,
+                style: const TextStyle(color: Colors.white70, fontSize: 14),
               ),
               const SizedBox(height: 32),
 
@@ -48,7 +49,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 controller: identifierController,
                 style: const TextStyle(color: Colors.white),
                 decoration: InputDecoration(
-                  labelText: 'Email or Username',
+                  labelText: t.emailOrUsername,
                   labelStyle: const TextStyle(color: Colors.white70),
                   filled: true,
                   fillColor: Colors.grey[900],
@@ -62,7 +63,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 obscureText: true,
                 style: const TextStyle(color: Colors.white),
                 decoration: InputDecoration(
-                  labelText: 'Password',
+                  labelText: t.password,
                   labelStyle: const TextStyle(color: Colors.white70),
                   filled: true,
                   fillColor: Colors.grey[900],
@@ -76,7 +77,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 alignment: Alignment.centerRight,
                 child: TextButton(
                   onPressed: _showForgotPasswordDialog,
-                  child: const Text('Forgot Password?', style: TextStyle(color: Colors.blueAccent)),
+                  child: Text(t.forgotPassword, style: const TextStyle(color: Colors.blueAccent)),
                 ),
               ),
               const SizedBox(height: 8),
@@ -125,12 +126,12 @@ class _LoginScreenState extends State<LoginScreen> {
                       strokeWidth: 2,
                     ),
                   )
-                      : const Row(
+                      : Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.login),
-                      SizedBox(width: 8),
-                      Text('Login'),
+                      const Icon(Icons.login),
+                      const SizedBox(width: 8),
+                      Text(t.login),
                     ],
                   ),
                 ),
@@ -145,9 +146,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
               TextButton(
                 onPressed: () => context.go('/register'),
-                child: const Text(
-                  "Don't have an account? Register",
-                  style: TextStyle(color: Colors.white70),
+                child: Text(
+                  t.dontHaveAccount,
+                  style: const TextStyle(color: Colors.white70),
                 ),
               ),
             ],
@@ -158,25 +159,24 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _showForgotPasswordDialog() {
+    final t = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
         backgroundColor: Colors.grey[900],
-        title: const Text('Forgot Password', style: TextStyle(color: Colors.white)),
-        content: const Text(
-          'To reset your password, please send an email to our support team:\n\n'
-              'сyberwest.kz@gmail.com\n\n'
-              'Your personal data will remain protected and confidential during this process.',
-          style: TextStyle(color: Colors.white70),
+        title: Text(t.forgotPassword, style: const TextStyle(color: Colors.white)),
+        content: Text(
+          t.forgotPasswordDialog,
+          style: const TextStyle(color: Colors.white70),
         ),
         actions: [
           TextButton(
-            child: const Text('Cancel', style: TextStyle(color: Colors.white60)),
+            child: Text(t.cancel, style: const TextStyle(color: Colors.white60)),
             onPressed: () => Navigator.pop(context),
           ),
           ElevatedButton.icon(
             icon: const Icon(Icons.email, color: Colors.white),
-            label: const Text('Contact Support', style: TextStyle(color: Colors.white)),
+            label: Text(t.contactSupport, style: const TextStyle(color: Colors.white)),
             style: ElevatedButton.styleFrom(backgroundColor: Colors.blueAccent),
             onPressed: () {
               Navigator.pop(context);

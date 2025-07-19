@@ -129,4 +129,81 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get sendResetEmail => 'Send Reset Email';
+
+  @override
+  String get welcomeBack => 'Welcome Back!';
+
+  @override
+  String get loginSubtitle => 'Login to continue your secure chats';
+
+  @override
+  String get emailOrUsername => 'Email or Username';
+
+  @override
+  String get password => 'Password';
+
+  @override
+  String get forgotPassword => 'Forgot Password?';
+
+  @override
+  String get forgotPasswordDialog =>
+      'To reset your password, please send an email to our support team:\n\nсyberwest.kz@gmail.com\n\nYour personal data will remain protected and confidential during this process.';
+
+  @override
+  String get login => 'Login';
+
+  @override
+  String get dontHaveAccount => 'Don\'t have an account? Register';
+
+  @override
+  String get contactSupport => 'Contact Support';
+
+  @override
+  String get createAccount => 'Create Account';
+
+  @override
+  String get joinSubtitle => 'Join the most secure messenger';
+
+  @override
+  String get username => 'Username';
+
+  @override
+  String get email => 'Email';
+
+  @override
+  String get confirmPassword => 'Confirm Password';
+
+  @override
+  String get register => 'Register';
+
+  @override
+  String get alreadyHaveAccount => 'Already have an account? Login';
+
+  @override
+  String get fillAllFields => 'Please fill in all fields';
+
+  @override
+  String get passwordTooShort => 'Password must be at least 8 characters';
+
+  @override
+  String get passwordsDontMatch => 'Passwords do not match';
+
+  @override
+  String get confirmEmailTitle => '📧 Confirm Email';
+
+  @override
+  String confirmEmailDesc(Object email) {
+    return 'Do you really want to register with this email?\n\n$email';
+  }
+
+  @override
+  String get confirm => 'Yes, Register';
+
+  @override
+  String get emailSent => '📨 Email Sent';
+
+  @override
+  String emailSentDesc(Object email) {
+    return 'A verification email has been sent to:\n\n$email\n\nPlease check your inbox or spam folder before logging in.';
+  }
 }

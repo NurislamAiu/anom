@@ -130,4 +130,81 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get sendResetEmail => 'Отправить письмо для сброса';
+
+  @override
+  String get welcomeBack => 'С возвращением!';
+
+  @override
+  String get loginSubtitle => 'Войдите, чтобы продолжить безопасный чат';
+
+  @override
+  String get emailOrUsername => 'Email или имя пользователя';
+
+  @override
+  String get password => 'Пароль';
+
+  @override
+  String get forgotPassword => 'Забыли пароль?';
+
+  @override
+  String get forgotPasswordDialog =>
+      'Чтобы сбросить пароль, пожалуйста, напишите нам на почту:\n\nсyberwest.kz@gmail.com\n\nВаши личные данные останутся защищёнными и конфиденциальными.';
+
+  @override
+  String get login => 'Войти';
+
+  @override
+  String get dontHaveAccount => 'Нет аккаунта? Зарегистрируйтесь';
+
+  @override
+  String get contactSupport => 'Написать в поддержку';
+
+  @override
+  String get createAccount => 'Создать аккаунт';
+
+  @override
+  String get joinSubtitle => 'Присоединяйтесь к самому безопасному мессенджеру';
+
+  @override
+  String get username => 'Имя пользователя';
+
+  @override
+  String get email => 'Эл. почта';
+
+  @override
+  String get confirmPassword => 'Подтвердите пароль';
+
+  @override
+  String get register => 'Зарегистрироваться';
+
+  @override
+  String get alreadyHaveAccount => 'Уже есть аккаунт? Войти';
+
+  @override
+  String get fillAllFields => 'Пожалуйста, заполните все поля';
+
+  @override
+  String get passwordTooShort => 'Пароль должен быть не менее 8 символов';
+
+  @override
+  String get passwordsDontMatch => 'Пароли не совпадают';
+
+  @override
+  String get confirmEmailTitle => '📧 Подтвердите почту';
+
+  @override
+  String confirmEmailDesc(Object email) {
+    return 'Вы действительно хотите зарегистрироваться с этой почтой?\n\n$email';
+  }
+
+  @override
+  String get confirm => 'Да, зарегистрироваться';
+
+  @override
+  String get emailSent => '📨 Письмо отправлено';
+
+  @override
+  String emailSentDesc(Object email) {
+    return 'На адрес $email отправлено письмо с подтверждением.\n\nПожалуйста, проверьте входящие или папку спам.';
+  }
 }
