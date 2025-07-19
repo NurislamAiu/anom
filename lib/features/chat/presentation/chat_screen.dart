@@ -1,10 +1,10 @@
 import 'package:anom/features/chat/presentation/widgets/chat_app_bar.dart';
 import 'package:anom/features/chat/presentation/widgets/chat_message_bubble.dart';
+import 'package:anom/features/chat/presentation/widgets/chat_input_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_indicator/loading_indicator.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
-import 'package:iconsax/iconsax.dart';
 
 import '../../../../providers/auth_provider.dart';
 import '../../../../providers/chat_provider.dart';
@@ -106,50 +106,10 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
               },
             ),
           ),
-          _buildInputBar(isBlocked),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildInputBar(bool isBlocked) {
-    if (isBlocked) return const SizedBox();
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-      child: Row(
-        children: [
-          IconButton(
-            icon: const Icon(Iconsax.image, color: Colors.white70),
-            onPressed: () {},
-          ),
-          IconButton(
-            icon: const Icon(Iconsax.video, color: Colors.white70),
-            onPressed: () {},
-          ),
-          Expanded(
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.white24),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: TextField(
-                controller: controller,
-                style: const TextStyle(color: Colors.white),
-                decoration: const InputDecoration(
-                  hintText: 'Type a message...',
-                  hintStyle: TextStyle(color: Colors.white38),
-                  border: InputBorder.none,
-                ),
-                onSubmitted: (_) => _sendMessage(),
-              ),
-            ),
-          ),
-          const SizedBox(width: 6),
-          IconButton(
-            icon: const Icon(Iconsax.send_2, color: Colors.white),
-            onPressed: _sendMessage,
+          ChatInputBar(
+            controller: controller,
+            isBlocked: isBlocked,
+            onSend: _sendMessage,
           ),
         ],
       ),
