@@ -1,10 +1,8 @@
 import 'package:anom/features/chat/presentation/widgets/chat_app_bar.dart';
-import 'package:anom/features/chat/presentation/widgets/popup_menu_handler.dart';
-
+import 'package:anom/features/chat/presentation/widgets/chat_message_bubble.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_indicator/loading_indicator.dart';
 import 'package:provider/provider.dart';
-import 'package:intl/intl.dart';
 import 'package:go_router/go_router.dart';
 import 'package:iconsax/iconsax.dart';
 
@@ -31,7 +29,9 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     super.initState();
     currentUser = context.read<AuthProvider>().username!;
     final chatId = widget.chatId;
+
     context.read<ChatProvider>().startListening(chatId, currentUser);
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<ChatProvider>().markMessagesAsRead(chatId, currentUser);
     });
@@ -78,102 +78,33 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
           Expanded(
             child: messages.isEmpty
                 ? const Center(
-                    child: SizedBox(
-                      width: 60,
-                      height: 60,
-                      child: LoadingIndicator(
-                        indicatorType: Indicator.ballSpinFadeLoader,
-                        colors: [Colors.white],
-                        strokeWidth: 2,
-                      ),
-                    ),
-                  )
+              child: SizedBox(
+                width: 60,
+                height: 60,
+                child: LoadingIndicator(
+                  indicatorType: Indicator.ballSpinFadeLoader,
+                  colors: [Colors.white],
+                  strokeWidth: 2,
+                ),
+              ),
+            )
                 : ListView.builder(
-                    controller: scrollController,
-                    reverse: true,
-                    itemCount: messages.length,
-                    itemBuilder: (context, index) {
-                      final msg = messages[messages.length - 1 - index];
-                      final isMe = msg.sender == currentUser;
+              controller: scrollController,
+              reverse: true,
+              itemCount: messages.length,
+              itemBuilder: (context, index) {
+                final msg = messages[messages.length - 1 - index];
+                final isMe = msg.sender == currentUser;
 
-                      return Align(
-                        alignment: isMe
-                            ? Alignment.centerRight
-                            : Alignment.centerLeft,
-                        child: GestureDetector(
-                          onLongPressStart: isMe
-                              ? (details) => ChatPopupMenu.show(
-                                  context,
-                                  details.globalPosition,
-                                  widget.chatId,
-                                  msg.id,
-                                  msg.text,
-                                  msg.sender,
-                                  controller,
-                                  this,
-                                )
-                              : null,
-                          child: Container(
-                            margin: const EdgeInsets.symmetric(
-                              vertical: 4,
-                              horizontal: 10,
-                            ),
-                            padding: const EdgeInsets.all(12),
-                            constraints: const BoxConstraints(maxWidth: 300),
-                            decoration: BoxDecoration(
-                              color: isMe ? Colors.white : Colors.grey[900],
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: isMe
-                                  ? CrossAxisAlignment.end
-                                  : CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  msg.text,
-                                  style: TextStyle(
-                                    color: isMe ? Colors.black : Colors.white,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    Text(
-                                      DateFormat.Hm().format(msg.timestamp),
-                                      style: TextStyle(
-                                        fontSize: 11,
-                                        color: isMe
-                                            ? Colors.grey[600]
-                                            : Colors.grey[400],
-                                      ),
-                                    ),
-                                    if (isMe) ...[
-                                      const SizedBox(width: 4),
-                                      AnimatedSwitcher(
-                                        duration: const Duration(
-                                          milliseconds: 300,
-                                        ),
-                                        child: _getStatusIcon(msg.status),
-                                        transitionBuilder: (child, animation) {
-                                          return ScaleTransition(
-                                            scale: animation,
-                                            child: child,
-                                          );
-                                        },
-                                      ),
-                                    ],
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
+                return ChatMessageBubble(
+                  msg: msg,
+                  isMe: isMe,
+                  chatId: widget.chatId,
+                  controller: controller,
+                  vsync: this,
+                );
+              },
+            ),
           ),
           _buildInputBar(isBlocked),
         ],
@@ -183,6 +114,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
 
   Widget _buildInputBar(bool isBlocked) {
     if (isBlocked) return const SizedBox();
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       child: Row(
@@ -227,32 +159,19 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   Future<void> _sendMessage() async {
     final text = controller.text.trim();
     if (text.isEmpty) return;
+
     controller.clear();
+
     await context.read<ChatProvider>().sendMessage(
       chatId: widget.chatId,
       sender: currentUser,
       text: text,
     );
+
     scrollController.animateTo(
       0,
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeOut,
     );
-  }
-
-  Icon _getStatusIcon(String status) {
-    switch (status) {
-      case 'read':
-        return const Icon(
-          Icons.done_all,
-          color: Colors.lightBlueAccent,
-          size: 18,
-        );
-      case 'delivered':
-        return const Icon(Icons.done_all, color: Colors.grey, size: 18);
-      case 'sent':
-      default:
-        return const Icon(Icons.check, color: Colors.grey, size: 18);
-    }
   }
 }
