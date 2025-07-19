@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -47,11 +49,15 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
     );
 
     _controller.clear();
-    await context.read<GroupChatProvider>().sendMessage(widget.groupId, msg);
+
     _scrollController.animateTo(
       0,
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeOut,
+    );
+
+    unawaited(
+      context.read<GroupChatProvider>().sendMessage(widget.groupId, msg),
     );
   }
 
@@ -149,12 +155,29 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
                           style: const TextStyle(color: Colors.white),
                         ),
                         const SizedBox(height: 4),
-                        Text(
-                          DateFormat.Hm().format(msg.timestamp.toDate()),
-                          style: const TextStyle(
-                            fontSize: 10,
-                            color: Colors.white38,
-                          ),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              DateFormat.Hm().format(msg.timestamp.toDate()),
+                              style: const TextStyle(
+                                fontSize: 10,
+                                color: Colors.white38,
+                              ),
+                            ),
+                            if (isMe) ...[
+                              const SizedBox(width: 6),
+                              Icon(
+                                msg.readBy.length > 1
+                                    ? Icons.done_all
+                                    : Icons.done,
+                                size: 16,
+                                color: msg.readBy.length > 1
+                                    ? Colors.blueAccent
+                                    : Colors.white38,
+                              ),
+                            ],
+                          ],
                         ),
                       ],
                     ),
@@ -163,17 +186,18 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
               },
             ),
           ),
+
           Padding(
             padding: const EdgeInsets.only(
-              left: 8.0,
-              right: 8,
-              top: 8,
+              left: 12,
+              top: 10,
+              right: 12,
               bottom: 30,
             ),
             child: Row(
               children: [
                 IconButton(
-                  icon: const Icon(Iconsax.health, color: Colors.white70),
+                  icon: const Icon(Iconsax.image, color: Colors.white70),
                   onPressed: () {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
@@ -193,24 +217,28 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
                   },
                 ),
                 Expanded(
-                  child: TextField(
-                    controller: _controller,
-                    style: const TextStyle(color: Colors.white),
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: Colors.white10,
-                      hintText: 'Введите сообщение...',
-                      hintStyle: const TextStyle(color: Colors.white54),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide.none,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.white24),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: TextField(
+                      controller: _controller,
+                      style: const TextStyle(color: Colors.white),
+                      decoration: const InputDecoration(
+                        hintText: 'Введите сообщение...',
+                        hintStyle: TextStyle(color: Colors.white38),
+                        border: InputBorder.none,
                       ),
+                      onSubmitted: (_) => _sendMessage(currentUser),
                     ),
                   ),
                 ),
+                const SizedBox(width: 6),
                 IconButton(
+                  icon: const Icon(Iconsax.send_2, color: Colors.white),
                   onPressed: () => _sendMessage(currentUser),
-                  icon: const Icon(Icons.send, color: Colors.white),
                 ),
               ],
             ),

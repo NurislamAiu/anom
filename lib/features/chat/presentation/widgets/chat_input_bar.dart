@@ -18,7 +18,7 @@ class ChatInputBar extends StatelessWidget {
     if (isBlocked) return const SizedBox();
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      padding: const EdgeInsets.only(left: 12, top: 10, right: 12, bottom: 30),
       child: Row(
         children: [
           IconButton(

@@ -11,14 +11,15 @@ class GroupChatService {
   }
 
   Future<void> sendGroupMessage(String groupId, GroupMessage message) async {
-    await _db
+    final docRef = _db
         .collection('groupChats')
         .doc(groupId)
         .collection('messages')
-        .add(message.toJson());
+        .doc();
+
+    await docRef.set(message.toJson());
 
     await _db.collection('groupChats').doc(groupId).update({
-      'lastMessage': message.text,
       'updatedAt': FieldValue.serverTimestamp(),
     });
   }
@@ -31,7 +32,36 @@ class GroupChatService {
         .orderBy('timestamp', descending: true)
         .snapshots()
         .map((snapshot) =>
-        snapshot.docs.map((doc) => GroupMessage.fromJson(doc.data())).toList());
+        snapshot.docs.map((doc) {
+          final msg = GroupMessage.fromJson(doc.data());
+          return msg.copyWith(id: doc.id);
+        }).toList());
+  }
+
+  Future<void> markMessageDelivered(
+      String groupId, String messageId, String username) async {
+    final ref = _db
+        .collection('groupChats')
+        .doc(groupId)
+        .collection('messages')
+        .doc(messageId);
+
+    await ref.update({
+      'deliveredTo': FieldValue.arrayUnion([username]),
+    });
+  }
+
+  Future<void> markMessageRead(
+      String groupId, String messageId, String username) async {
+    final ref = _db
+        .collection('groupChats')
+        .doc(groupId)
+        .collection('messages')
+        .doc(messageId);
+
+    await ref.update({
+      'readBy': FieldValue.arrayUnion([username]),
+    });
   }
 
   Future<List<GroupChat>> getUserGroups(String username) async {
@@ -60,9 +90,24 @@ class GroupChatService {
   }
 
   Future<void> addUserToGroup(String groupId, String username) async {
-    final groupRef = FirebaseFirestore.instance.collection('groupChats').doc(groupId);
-    await groupRef.update({
-      'participants': FieldValue.arrayUnion([username])
+    await _db.collection('groupChats').doc(groupId).update({
+      'participants': FieldValue.arrayUnion([username]),
+    });
+  }
+
+  Future<void> removeUserFromGroup(String groupId, String username) async {
+    await _db.collection('groupChats').doc(groupId).update({
+      'participants': FieldValue.arrayRemove([username]),
+    });
+  }
+
+  Future<void> deleteGroupChat(String groupId) async {
+    await _db.collection('groupChats').doc(groupId).delete();
+  }
+
+  Future<void> togglePinGroup(String groupId, bool value) async {
+    await _db.collection('groupChats').doc(groupId).update({
+      'isPinned': value,
     });
   }
 
@@ -76,22 +121,5 @@ class GroupChatService {
     if (query.docs.isEmpty) return null;
 
     return query.docs.first.id;
-  }
-
-  Future<void> removeUserFromGroup(String groupId, String username) async {
-    final docRef = _db.collection('groupChats').doc(groupId);
-    await docRef.update({
-      'participants': FieldValue.arrayRemove([username]),
-    });
-  }
-
-  Future<void> deleteGroupChat(String groupId) async {
-    await _db.collection('groupChats').doc(groupId).delete();
-  }
-
-  Future<void> togglePinGroup(String groupId, bool value) async {
-    await _db.collection('groupChats').doc(groupId).update({
-      'isPinned': value,
-    });
   }
 }

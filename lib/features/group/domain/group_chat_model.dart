@@ -9,6 +9,7 @@ class GroupChat {
   final Timestamp? updatedAt;
   final bool isPinned;
 
+
   GroupChat({
     required this.groupId,
     required this.groupName,
