@@ -20,7 +20,106 @@ class AuthProvider extends ChangeNotifier {
 
   String? email;
 
-  
+  void setLocale(String langCode) {
+    _locale = langCode;
+    notifyListeners();
+  }
+
+  Future<void> loadSession() async {
+    final token = await _storage.read(key: _tokenKey);
+    if (token != null) {
+      final user = FirebaseAuth.instance.currentUser;
+      await user?.reload();
+      final refreshedUser = FirebaseAuth.instance.currentUser;
+
+      final isVerified = refreshedUser?.emailVerified ?? false;
+      final userEmail = refreshedUser?.email;
+
+      if (isVerified) {
+        final userName = await _authService.getCurrentUsername();
+        if (userName != null) {
+          _username = userName;
+          email = userEmail;
+          _isLoggedIn = true;
+          notifyListeners();
+        }
+      } else {
+        _isLoggedIn = false;
+        notifyListeners();
+      }
+    }
+  }
+
+  Future<String?> register({
+    required String username,
+    required String email,
+    required String password,
+  }) async {
+    final result = await _authService.registerUser(
+      username: username,
+      email: email,
+      password: password,
+    );
+
+    if (result == null) {
+      this.email = email;
+      _username = username;
+      _isLoggedIn = false;
+      notifyListeners();
+    }
+
+    return result;
+  }
+
+  Future<String?> login({
+    required String identifier,
+    required String password,
+  }) async {
+    final error = await _authService.loginUser(
+      identifier: identifier,
+      password: password,
+    );
+
+    if (error == null) {
+      final user = FirebaseAuth.instance.currentUser;
+      await user?.reload();
+      final refreshedUser = FirebaseAuth.instance.currentUser;
+
+      final isVerified = refreshedUser?.emailVerified ?? false;
+
+      if (!isVerified) {
+        return 'Пожалуйста, подтвердите ваш email перед входом.';
+      }
+
+      _username = await _authService.getCurrentUsername();
+      email = await _authService.getCurrentEmail();
+      _isLoggedIn = true;
+      await _storage.write(key: _tokenKey, value: identifier);
+      notifyListeners();
+    }
+
+    return error;
+  }
+
+  Future<void> logout() async {
+    await _authService.logout();
+    await _storage.delete(key: _tokenKey);
+    _isLoggedIn = false;
+    _username = null;
+    email = null;
+    notifyListeners();
+  }
+
+  Future<bool> checkEmailVerified() async {
+    final user = FirebaseAuth.instance.currentUser;
+    await user?.reload();
+    return user?.emailVerified ?? false;
+  }
+
+  Future<void> resendEmailVerification() async {
+    await _authService.resendEmailVerification();
+  }
+
   Future<void> resetPasswordViaEmail(BuildContext context) async {
     if (email == null || email!.isEmpty) {
       Flushbar(
@@ -33,13 +132,11 @@ class AuthProvider extends ChangeNotifier {
         borderRadius: BorderRadius.circular(16),
         duration: const Duration(seconds: 3),
       ).show(context);
-
       return;
     }
 
     try {
       await FirebaseAuth.instance.sendPasswordResetEmail(email: email!);
-
       Flushbar(
         title: 'Check Your Email',
         message: 'A password reset link has been sent to $email',
@@ -62,80 +159,5 @@ class AuthProvider extends ChangeNotifier {
         duration: const Duration(seconds: 4),
       ).show(context);
     }
-  }
-
-  Future<void> loadSession() async {
-    final token = await _storage.read(key: _tokenKey);
-    if (token != null) {
-      final user = await _authService.getCurrentUsername();
-      final userEmail = await _authService.getCurrentEmail();
-      if (user != null) {
-        _isLoggedIn = true;
-        _username = user;
-        email = userEmail;
-        notifyListeners();
-      }
-    }
-  }
-
-  void setLocale(String langCode) {
-    _locale = langCode;
-    notifyListeners();
-  }
-
-  Future<String?> register({
-    required String username,
-    required String email,
-    required String password,
-  }) async {
-    final result = await _authService.registerUser(
-      username: username,
-      email: email,
-      password: password,
-    );
-    if (result == null) {
-      this.email = email;
-      _username = username;
-      _isLoggedIn = true;
-      notifyListeners();
-    }
-    return result;
-  }
-
-  Future<String?> login({
-    required String identifier,
-    required String password,
-  }) async {
-    final error = await _authService.loginUser(
-      identifier: identifier,
-      password: password,
-    );
-
-    if (error == null) {
-      _username = await _authService.getCurrentUsername();
-      email = await _authService.getCurrentEmail();
-      _isLoggedIn = true;
-      await _storage.write(key: _tokenKey, value: identifier);
-      notifyListeners();
-    }
-
-    return error;
-  }
-
-  Future<void> logout() async {
-    await _authService.logout();
-    await _storage.delete(key: _tokenKey);
-    _isLoggedIn = false;
-    _username = null;
-    email = null;
-    notifyListeners();
-  }
-
-  Future<bool> checkEmailVerified() async {
-    return await _authService.isEmailVerified();
-  }
-
-  Future<void> resendEmailVerification() async {
-    await _authService.resendEmailVerification();
   }
 }
