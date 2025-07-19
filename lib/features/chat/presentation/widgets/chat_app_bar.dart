@@ -14,11 +14,7 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String chatId;
   final VoidCallback onBack;
 
-  const ChatAppBar({
-    super.key,
-    required this.chatId,
-    required this.onBack,
-  });
+  const ChatAppBar({super.key, required this.chatId, required this.onBack});
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
@@ -56,14 +52,14 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
                       : null,
                   child: (avatar == null || avatar.isEmpty)
                       ? Text(
-                    otherUser.isNotEmpty
-                        ? otherUser[0].toUpperCase()
-                        : '?',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  )
+                          otherUser.isNotEmpty
+                              ? otherUser[0].toUpperCase()
+                              : '?',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        )
                       : null,
                 );
               },
@@ -86,7 +82,11 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
                       if (isVerified)
                         const Padding(
                           padding: EdgeInsets.only(left: 4),
-                          child: Icon(Icons.verified, color: Colors.red, size: 16),
+                          child: Icon(
+                            Icons.verified,
+                            color: Colors.red,
+                            size: 16,
+                          ),
                         ),
                     ],
                   );
@@ -103,7 +103,8 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
                     return const Text('Offline');
                   }
 
-                  final data = snapshot.data!.docs.first.data() as Map<String, dynamic>;
+                  final data =
+                      snapshot.data!.docs.first.data() as Map<String, dynamic>;
                   final isOnline = data['isOnline'] == true;
                   final lastSeen = (data['lastSeen'] as Timestamp?)?.toDate();
 
@@ -139,8 +140,11 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
         PopupMenuButton<String>(
           color: Colors.grey[900],
           icon: const Icon(Icons.more_vert_outlined, color: Colors.white70),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          onSelected: (value) => _handleAction(context, value, chatId, otherUser),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          onSelected: (value) =>
+              _handleAction(context, value, chatId, otherUser),
           itemBuilder: (context) => [
             PopupMenuItem(
               value: isBlocked ? 'unblock' : 'block',
@@ -155,11 +159,17 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
             ),
             const PopupMenuItem(
               value: 'decrypt',
-              child: Text('Изменить расшифровку', style: TextStyle(color: Colors.white)),
+              child: Text(
+                'Изменить расшифровку',
+                style: TextStyle(color: Colors.white),
+              ),
             ),
             const PopupMenuItem(
               value: 'pin',
-              child: Text('Закрепить чат', style: TextStyle(color: Colors.white)),
+              child: Text(
+                'Закрепить чат',
+                style: TextStyle(color: Colors.white),
+              ),
             ),
           ],
         ),
@@ -169,9 +179,7 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   void _showAvatarDialog(BuildContext context) {
     final currentUser = context.read<AuthProvider>().username ?? 'user';
-    final otherUser = chatId
-        .split('_')
-        .firstWhere((u) => u != currentUser);
+    final otherUser = chatId.split('_').firstWhere((u) => u != currentUser);
 
     final userCache = Provider.of<UserCacheProvider>(context, listen: false);
 
@@ -209,13 +217,13 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
                   : null,
               child: (avatarUrl == null || avatarUrl.isEmpty)
                   ? Text(
-                otherUser[0].toUpperCase(),
-                style: const TextStyle(
-                  fontSize: 100,
-                  color: Colors.white70,
-                  fontWeight: FontWeight.bold,
-                ),
-              )
+                      otherUser[0].toUpperCase(),
+                      style: const TextStyle(
+                        fontSize: 100,
+                        color: Colors.white70,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    )
                   : null,
             ),
           ),
@@ -239,7 +247,12 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
     return '${diff.inDays} дн назад';
   }
 
-  void _handleAction(BuildContext context, String value, String chatId, String otherUser) async {
+  void _handleAction(
+    BuildContext context,
+    String value,
+    String chatId,
+    String otherUser,
+  ) async {
     final block = context.read<BlockProvider>();
     final chat = context.read<ChatProvider>();
 
@@ -253,7 +266,11 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
         _showSnack(context, 'Контакт разблокирован');
         break;
       case 'delete':
-        final confirm = await _confirmDialog(context, 'Удалить чат', 'Вы уверены?');
+        final confirm = await _confirmDialog(
+          context,
+          'Удалить чат',
+          'Вы уверены?',
+        );
         if (!confirm) return;
         await chat.deleteChat(chatId);
         if (context.mounted) context.go('/home');
@@ -266,7 +283,9 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
         }
         break;
       case 'pin':
-        final isPinned = chat.userChats.firstWhere((c) => c['chatId'] == chatId)['pinned'] == true;
+        final isPinned =
+            chat.userChats.firstWhere((c) => c['chatId'] == chatId)['pinned'] ==
+            true;
         await chat.togglePin(chatId, !isPinned);
         _showSnack(context, isPinned ? 'Чат откреплён' : 'Чат закреплён');
         break;
@@ -284,19 +303,32 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
     ).show(context);
   }
 
-  Future<bool> _confirmDialog(BuildContext context, String title, String message) async {
+  Future<bool> _confirmDialog(
+    BuildContext context,
+    String title,
+    String message,
+  ) async {
     return await showDialog<bool>(
-      context: context,
-      builder: (_) => AlertDialog(
-        backgroundColor: Colors.grey[900],
-        title: Text(title, style: const TextStyle(color: Colors.white)),
-        content: Text(message, style: const TextStyle(color: Colors.white70)),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Отмена')),
-          TextButton(onPressed: () => Navigator.pop(context, true), child: const Text('Удалить')),
-        ],
-      ),
-    ) ??
+          context: context,
+          builder: (_) => AlertDialog(
+            backgroundColor: Colors.grey[900],
+            title: Text(title, style: const TextStyle(color: Colors.white)),
+            content: Text(
+              message,
+              style: const TextStyle(color: Colors.white70),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('Отмена'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: const Text('Удалить'),
+              ),
+            ],
+          ),
+        ) ??
         false;
   }
 
@@ -314,11 +346,13 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
           children: [
             const Padding(
               padding: EdgeInsets.symmetric(vertical: 16),
-              child: Text('Выберите тип расшифровки',
-                  style: TextStyle(color: Colors.white70, fontSize: 16)),
+              child: Text(
+                'Выберите тип расшифровки',
+                style: TextStyle(color: Colors.white70, fontSize: 16),
+              ),
             ),
             ...options.map(
-                  (algo) => ListTile(
+              (algo) => ListTile(
                 title: Text(algo, style: const TextStyle(color: Colors.white)),
                 onTap: () => Navigator.pop(context, algo),
               ),

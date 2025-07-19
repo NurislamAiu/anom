@@ -8,6 +8,9 @@ class ChatMessage {
   final String status;
   final bool edited;
 
+  final String? localMediaPath; // 🔥 новое
+  final String? mediaType;      // 🔥 новое: 'image' / 'video'
+
   ChatMessage({
     required this.id,
     required this.sender,
@@ -15,6 +18,8 @@ class ChatMessage {
     required this.timestamp,
     required this.status,
     this.edited = false,
+    this.localMediaPath,
+    this.mediaType,
   });
 
   Map<String, dynamic> toJson() => {
@@ -23,6 +28,8 @@ class ChatMessage {
     'timestamp': timestamp.toIso8601String(),
     'status': status,
     'edited': edited,
+    'localMediaPath': localMediaPath,
+    'mediaType': mediaType,
   };
 
   static ChatMessage fromJson(Map<String, dynamic> json, String id) {
@@ -35,6 +42,8 @@ class ChatMessage {
           : DateTime.tryParse(json['timestamp'] ?? '') ?? DateTime.now(),
       status: json['status'] ?? 'sent',
       edited: json['edited'] ?? false,
+      localMediaPath: json['localMediaPath'],
+      mediaType: json['mediaType'],
     );
   }
 }

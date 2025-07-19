@@ -1,16 +1,22 @@
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:iconsax/iconsax.dart';
 
 class ChatInputBar extends StatelessWidget {
   final TextEditingController controller;
   final VoidCallback onSend;
   final bool isBlocked;
+  final Function(File file, String type) onMediaSelected;
 
   const ChatInputBar({
     super.key,
     required this.controller,
     required this.onSend,
     required this.isBlocked,
+    required this.onMediaSelected,
   });
 
   @override
@@ -23,11 +29,25 @@ class ChatInputBar extends StatelessWidget {
         children: [
           IconButton(
             icon: const Icon(Iconsax.image, color: Colors.white70),
-            onPressed: () {},
+            onPressed: () async {
+              final picker = ImagePicker();
+              final picked = await picker.pickImage(source: ImageSource.gallery);
+              if (picked != null) {
+                onMediaSelected(File(picked.path), 'image');
+              }
+            },
           ),
           IconButton(
             icon: const Icon(Iconsax.video, color: Colors.white70),
-            onPressed: () {},
+            onPressed: () async {
+              final result = await FilePicker.platform.pickFiles(
+                type: FileType.video,
+              );
+              if (result != null && result.files.isNotEmpty) {
+                final file = File(result.files.first.path!);
+                onMediaSelected(file, 'video');
+              }
+            },
           ),
           Expanded(
             child: Container(
@@ -40,7 +60,7 @@ class ChatInputBar extends StatelessWidget {
                 controller: controller,
                 style: const TextStyle(color: Colors.white),
                 decoration: const InputDecoration(
-                  hintText: 'Type a message...',
+                  hintText: 'Введите сообщение...',
                   hintStyle: TextStyle(color: Colors.white38),
                   border: InputBorder.none,
                 ),

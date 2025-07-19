@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:anom/features/chat/presentation/widgets/chat_app_bar.dart';
 import 'package:anom/features/chat/presentation/widgets/chat_message_bubble.dart';
 import 'package:anom/features/chat/presentation/widgets/chat_input_bar.dart';
@@ -112,6 +114,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
             controller: controller,
             isBlocked: isBlocked,
             onSend: _sendMessage,
+            onMediaSelected: _sendMediaMessage,
           ),
         ],
       ),
@@ -128,6 +131,23 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
       chatId: widget.chatId,
       sender: currentUser,
       text: text,
+    );
+
+    scrollController.animateTo(
+      0,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeOut,
+    );
+  }
+
+  Future<void> _sendMediaMessage(File file, String type) async {
+    final path = file.path;
+
+    await context.read<ChatProvider>().sendMediaMessage(
+      chatId: widget.chatId,
+      sender: currentUser,
+      mediaPath: path,
+      mediaType: type,
     );
 
     scrollController.animateTo(

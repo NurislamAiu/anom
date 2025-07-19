@@ -44,7 +44,9 @@ class ChatProvider extends ChangeNotifier {
       _messages = data;
 
       for (final msg in data) {
-        if (msg.sender != currentUser && msg.status != 'delivered' && msg.status != 'read') {
+        if (msg.sender != currentUser &&
+            msg.status != 'delivered' &&
+            msg.status != 'read') {
           await _chatService.updateMessageStatus(chatId, msg, 'delivered');
         }
       }
@@ -152,6 +154,34 @@ class ChatProvider extends ChangeNotifier {
       'unreadBy': FieldValue.arrayRemove([currentUser]),
     });
 
+    notifyListeners();
+  }
+
+  Future<void> sendMediaMessage({
+    required String chatId,
+    required String sender,
+    required String mediaPath,
+    required String mediaType, // 'image' или 'video'
+  }) async {
+    final docRef = FirebaseFirestore.instance
+        .collection('chats')
+        .doc(chatId)
+        .collection('messages')
+        .doc();
+
+    final msg = ChatMessage(
+      id: docRef.id,
+      sender: sender,
+      text: '',
+      timestamp: DateTime.now(),
+      status: 'sent',
+      localMediaPath: mediaPath,
+      mediaType: mediaType,
+    );
+
+    await docRef.set(msg.toJson());
+
+    _messages.add(msg);
     notifyListeners();
   }
 
