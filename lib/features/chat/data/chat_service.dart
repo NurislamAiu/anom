@@ -198,29 +198,23 @@ class ChatService {
     return snapshot.docs.first;
   }
 
-  Future<void> updateMessageStatus(
-    String chatId,
-    ChatMessage msg,
-    String newStatus,
-  ) async {
-    final query = await _db
+  Future<void> updateMessageStatus({
+    required String chatId,
+    required String messageId,
+    required String currentUser,
+    required String newStatus,
+  }) async {
+    final docRef = _db
         .collection('messages')
         .doc(chatId)
         .collection('messages')
-        .where('timestamp', isEqualTo: Timestamp.fromDate(msg.timestamp))
-        .where('sender', isEqualTo: msg.sender)
-        .limit(1)
-        .get();
-
-    if (query.docs.isEmpty) return;
-
-    final docRef = query.docs.first.reference;
+        .doc(messageId);
 
     await docRef.update({'status': newStatus});
 
     if (newStatus == 'read') {
       await _db.collection('chats').doc(chatId).update({
-        'unreadBy': FieldValue.arrayRemove([msg.sender]),
+        'unreadBy': FieldValue.arrayRemove([currentUser]),
       });
     }
   }

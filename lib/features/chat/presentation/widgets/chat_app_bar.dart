@@ -92,21 +92,20 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
                   );
                 },
               ),
-              StreamBuilder<QuerySnapshot>(
+              StreamBuilder<DocumentSnapshot>(
                 stream: FirebaseFirestore.instance
-                    .collection('users')
-                    .where('username', isEqualTo: otherUser)
-                    .limit(1)
+                    .collection('chats')
+                    .doc(chatId)
                     .snapshots(),
                 builder: (context, snapshot) {
-                  if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                    return const Text('Offline');
+                  if (!snapshot.hasData) {
+                    return const Text('Offline', style: TextStyle(color: Colors.grey));
                   }
 
-                  final data =
-                      snapshot.data!.docs.first.data() as Map<String, dynamic>;
-                  final isOnline = data['isOnline'] == true;
-                  final lastSeen = (data['lastSeen'] as Timestamp?)?.toDate();
+                  final data = snapshot.data!.data() as Map<String, dynamic>?;
+
+                  final isOnline = data?['isOnline'] == true;
+                  final lastSeen = (data?['lastSeen'] as Timestamp?)?.toDate();
 
                   return Text(
                     isOnline

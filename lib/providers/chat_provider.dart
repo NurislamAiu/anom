@@ -21,6 +21,8 @@ class ChatProvider extends ChangeNotifier {
 
   StreamSubscription<List<Map<String, dynamic>>>? _chatStreamSub;
 
+  final Map<String, bool> _verificityCache = {};
+
   void startChatListListener(String username) {
     _chatStreamSub?.cancel();
     _chatStreamSub = _chatService.streamUserChats(username).listen((data) {
@@ -40,14 +42,19 @@ class ChatProvider extends ChangeNotifier {
 
   void startListening(String chatId, String currentUser) {
     _messageStream = _chatService.getMessages(chatId);
-    _messageStream!.listen((data) async {
+    _messageStream!.listen((data) {
       _messages = data;
 
       for (final msg in data) {
         if (msg.sender != currentUser &&
             msg.status != 'delivered' &&
             msg.status != 'read') {
-          await _chatService.updateMessageStatus(chatId, msg, 'delivered');
+          _chatService.updateMessageStatus(
+            chatId: chatId,
+            messageId: msg.id,
+            currentUser: currentUser,
+            newStatus: 'delivered',
+          );
         }
       }
 
@@ -61,21 +68,62 @@ class ChatProvider extends ChangeNotifier {
     required String text,
   }) async {
     final msg = ChatMessage(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      id: '',
       sender: sender,
       text: text,
       timestamp: DateTime.now(),
       status: 'sent',
     );
 
+    await _chatService.sendMessage(chatId, msg);
     _messages.add(msg);
     notifyListeners();
-
-    await _chatService.sendMessage(chatId, msg);
   }
 
-  void clear() {
-    _messages = [];
+  Future<void> sendMediaMessage({
+    required String chatId,
+    required String sender,
+    required String mediaPath,
+    required String mediaType,
+  }) async {
+    final docRef = FirebaseFirestore.instance
+        .collection('messages')
+        .doc(chatId)
+        .collection('messages')
+        .doc();
+
+    final msg = ChatMessage(
+      id: docRef.id,
+      sender: sender,
+      text: '',
+      timestamp: DateTime.now(),
+      status: 'sent',
+      localMediaPath: mediaPath,
+      mediaType: mediaType,
+    );
+
+    await docRef.set(msg.toJson());
+
+    _messages.add(msg);
+    notifyListeners();
+  }
+
+  Future<void> markMessagesAsRead(String chatId, String currentUser) async {
+    for (final msg in _messages) {
+      if (msg.status != 'read' && msg.sender != currentUser) {
+        await _chatService.updateMessageStatus(
+          chatId: chatId,
+          messageId: msg.id,
+          currentUser: currentUser,
+          newStatus: 'read',
+        );
+      }
+    }
+
+    await FirebaseFirestore.instance.collection('chats').doc(chatId).update({
+      'unreadBy': FieldValue.arrayRemove([currentUser]),
+    });
+
     notifyListeners();
   }
 
@@ -119,8 +167,6 @@ class ChatProvider extends ChangeNotifier {
     }
   }
 
-  final Map<String, bool> _verificityCache = {};
-
   Future<bool> isUserVerified(String username) async {
     if (_verificityCache.containsKey(username)) {
       return _verificityCache[username]!;
@@ -143,45 +189,8 @@ class ChatProvider extends ChangeNotifier {
     await _chatService.deleteMessage(chatId, messageId);
   }
 
-  Future<void> markMessagesAsRead(String chatId, String currentUser) async {
-    for (final msg in _messages) {
-      if (msg.status != 'read' && msg.sender != currentUser) {
-        await _chatService.updateMessageStatus(chatId, msg, 'read');
-      }
-    }
-
-    await FirebaseFirestore.instance.collection('chats').doc(chatId).update({
-      'unreadBy': FieldValue.arrayRemove([currentUser]),
-    });
-
-    notifyListeners();
-  }
-
-  Future<void> sendMediaMessage({
-    required String chatId,
-    required String sender,
-    required String mediaPath,
-    required String mediaType, // 'image' или 'video'
-  }) async {
-    final docRef = FirebaseFirestore.instance
-        .collection('chats')
-        .doc(chatId)
-        .collection('messages')
-        .doc();
-
-    final msg = ChatMessage(
-      id: docRef.id,
-      sender: sender,
-      text: '',
-      timestamp: DateTime.now(),
-      status: 'sent',
-      localMediaPath: mediaPath,
-      mediaType: mediaType,
-    );
-
-    await docRef.set(msg.toJson());
-
-    _messages.add(msg);
+  void clear() {
+    _messages = [];
     notifyListeners();
   }
 
