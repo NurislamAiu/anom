@@ -278,6 +278,8 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
       message: text,
       duration: const Duration(seconds: 2),
       flushbarPosition: FlushbarPosition.TOP,
+      margin: const EdgeInsets.all(16),
+      borderRadius: BorderRadius.circular(8),
       backgroundColor: Colors.green,
     ).show(context);
   }

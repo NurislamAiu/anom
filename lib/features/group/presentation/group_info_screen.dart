@@ -141,8 +141,13 @@ class GroupInfoScreen extends StatelessWidget {
                       await context.read<GroupChatProvider>().deleteGroup(groupId);
 
                       if (context.mounted) {
-                        Navigator.pop(context);
-                        context.go('/home');
+                        Navigator.of(context, rootNavigator: true).pop(); // закрываем loader
+
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          if (context.mounted) {
+                            context.go('/home');
+                          }
+                        });
                       }
                     }
                   },
@@ -159,7 +164,6 @@ class GroupInfoScreen extends StatelessWidget {
                   label: isPinned ? 'Открепить группу' : 'Закрепить группу',
                   onTap: () async {
                     _showSnack(context, isPinned ? 'Группа откреплена' : 'Группа закреплена');
-                    context.pop();
                     await context.read<GroupChatProvider>().togglePinned(groupId);
                   },
                 ),
@@ -213,7 +217,7 @@ class GroupInfoScreen extends StatelessWidget {
   void _showSnack(BuildContext context, String message) {
     Flushbar(
       message: message,
-      backgroundColor: Colors.grey[850]!,
+      backgroundColor: Colors.green,
       duration: const Duration(seconds: 2),
       margin: const EdgeInsets.all(16),
       borderRadius: BorderRadius.circular(8),
