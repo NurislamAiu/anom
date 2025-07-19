@@ -8,10 +8,20 @@ class SearchProvider extends ChangeNotifier {
 
   List<UserModel> get results => _results;
 
-  Future<void> search(String query) async {
-    if (query.trim().isEmpty) return;
+  bool _isLoading = false;
+  bool get isLoading => _isLoading;
 
-    _results = await _service.searchUsers(query.trim());
+  Future<void> search(String query) async {
+    query = query.trim();
+    if (query.isEmpty) return;
+
+    _isLoading = true;
+    _results = [];
+    notifyListeners();
+
+    _results = await _service.searchUsers(query);
+
+    _isLoading = false;
     notifyListeners();
   }
 

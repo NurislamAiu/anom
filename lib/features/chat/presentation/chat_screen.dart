@@ -9,6 +9,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../providers/auth_provider.dart';
 import '../../../../providers/chat_provider.dart';
 import '../../../providers/block_provider.dart';
+import '../../../providers/search_provider.dart';
 
 class ChatScreen extends StatefulWidget {
   final String chatId;
@@ -33,6 +34,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     context.read<ChatProvider>().startListening(chatId, currentUser);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<SearchProvider>().clear();
       context.read<ChatProvider>().markMessagesAsRead(chatId, currentUser);
     });
   }
