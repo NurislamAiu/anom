@@ -62,10 +62,8 @@ class ProfileScreen extends StatelessWidget {
                   ),
                   child: IconButton(
                     icon: const Icon(Icons.edit, size: 18, color: Colors.black),
-                    onPressed: () {
-                      
-                    },
-                    tooltip: 'Change avatar',
+                    onPressed: () {},
+                    tooltip: t.changeAvatar,
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(),
                   ),
@@ -89,45 +87,38 @@ class ProfileScreen extends StatelessWidget {
                   const Icon(Icons.verified, color: Colors.red, size: 20),
                 ],
               ],
-            )
+            ),
           ),
           ListTile(
             leading: const Icon(Icons.person_outline, color: Colors.white),
-            title: const Text('About Me', style: TextStyle(color: Colors.white)),
+            title: Text(t.aboutMe, style: const TextStyle(color: Colors.white)),
             subtitle: Text(
-              profile.bio.isEmpty ? 'No bio yet' : profile.bio,
+              profile.bio.isEmpty ? t.noBioYet : profile.bio,
               style: const TextStyle(color: Colors.white54),
             ),
-            onTap: () => _showEditBioDialog(context),
+            onTap: () => _showEditBioDialog(context, t),
             trailing: const Icon(Icons.edit, color: Colors.white38),
           ),
           const Divider(color: Colors.white12),
 
-          
           ListTile(
             leading: const Icon(Icons.language, color: Colors.white),
             title: Text(t.changeLanguage, style: const TextStyle(color: Colors.white)),
             onTap: () => _showLanguageDialog(context, t),
             trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.white38),
           ),
-
-          
           ListTile(
             leading: const Icon(Icons.lock, color: Colors.white),
             title: Text(t.changePassword, style: const TextStyle(color: Colors.white)),
             onTap: () => _showPasswordDialog(context, auth, t),
             trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.white38),
           ),
-
-          
           ListTile(
             leading: const Icon(Icons.info_outline, color: Colors.white),
             title: Text(t.about, style: const TextStyle(color: Colors.white)),
             onTap: () => _showAboutDialog(context, t),
             trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.white38),
           ),
-
-          
           ListTile(
             leading: const Icon(Icons.privacy_tip, color: Colors.white),
             title: Text(t.privacy, style: const TextStyle(color: Colors.white)),
@@ -137,32 +128,28 @@ class ProfileScreen extends StatelessWidget {
 
           const Divider(color: Colors.white12),
 
-          
           ListTile(
             leading: const Icon(Icons.wifi_off, color: Colors.white),
-            title: const Text('Offline Communication', style: TextStyle(color: Colors.white)),
-            subtitle: const Text('Encrypted messaging without internet', style: TextStyle(color: Colors.white54, fontSize: 12)),
+            title: Text(t.offlineCommunication, style: const TextStyle(color: Colors.white)),
+            subtitle: Text(t.offlineCommunicationDesc, style: const TextStyle(color: Colors.white54, fontSize: 12)),
             onTap: () {
               showDialog(
                 context: context,
                 builder: (_) => AlertDialog(
                   backgroundColor: Colors.grey[900],
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                  title: const Row(
+                  title: Row(
                     children: [
-                      Icon(Icons.wifi_off, color: Colors.white),
-                      SizedBox(width: 8),
-                      Text('Offline Chat', style: TextStyle(color: Colors.white)),
+                      const Icon(Icons.wifi_off, color: Colors.white),
+                      const SizedBox(width: 8),
+                      Text(t.offlineChatTitle, style: const TextStyle(color: Colors.white)),
                     ],
                   ),
-                  content: const Text(
-                    'This feature is under development.\n\nYou will soon be able to send and receive encrypted messages even without internet using Bluetooth or mesh network.',
-                    style: TextStyle(color: Colors.white70, fontSize: 14),
-                  ),
+                  content: Text(t.offlineChatDesc, style: const TextStyle(color: Colors.white70, fontSize: 14)),
                   actions: [
                     TextButton(
                       onPressed: () => Navigator.pop(context),
-                      child: const Text('OK', style: TextStyle(color: Colors.blueAccent)),
+                      child: Text('OK', style: const TextStyle(color: Colors.blueAccent)),
                     ),
                   ],
                 ),
@@ -173,29 +160,26 @@ class ProfileScreen extends StatelessWidget {
 
           ListTile(
             leading: const Icon(Icons.vpn_lock, color: Colors.white),
-            title: const Text('Built-in VPN', style: TextStyle(color: Colors.white)),
-            subtitle: const Text('Protect your traffic using integrated VPN', style: TextStyle(color: Colors.white54, fontSize: 12)),
+            title: Text(t.vpn, style: const TextStyle(color: Colors.white)),
+            subtitle: Text(t.vpnDesc, style: const TextStyle(color: Colors.white54, fontSize: 12)),
             onTap: () {
               showDialog(
                 context: context,
                 builder: (_) => AlertDialog(
                   backgroundColor: Colors.grey[900],
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                  title: const Row(
+                  title: Row(
                     children: [
-                      Icon(Icons.vpn_lock, color: Colors.white),
-                      SizedBox(width: 8),
-                      Text('VPN Module', style: TextStyle(color: Colors.white)),
+                      const Icon(Icons.vpn_lock, color: Colors.white),
+                      const SizedBox(width: 8),
+                      Text(t.vpnTitle, style: const TextStyle(color: Colors.white)),
                     ],
                   ),
-                  content: const Text(
-                    'Our secure VPN feature is coming soon.\n\nYou’ll be able to route all your traffic through encrypted tunnels to stay private and secure.',
-                    style: TextStyle(color: Colors.white70, fontSize: 14),
-                  ),
+                  content: Text(t.vpnDialogDesc, style: const TextStyle(color: Colors.white70, fontSize: 14)),
                   actions: [
                     TextButton(
                       onPressed: () => Navigator.pop(context),
-                      child: const Text('Close', style: TextStyle(color: Colors.blueAccent)),
+                      child: Text('Close', style: const TextStyle(color: Colors.blueAccent)),
                     ),
                   ],
                 ),
@@ -206,29 +190,26 @@ class ProfileScreen extends StatelessWidget {
 
           ListTile(
             leading: const Icon(Icons.security, color: Colors.white),
-            title: const Text('Proxy Settings', style: TextStyle(color: Colors.white)),
-            subtitle: const Text('Custom proxy or Tor support', style: TextStyle(color: Colors.white54, fontSize: 12)),
+            title: Text(t.proxy, style: const TextStyle(color: Colors.white)),
+            subtitle: Text(t.proxyDesc, style: const TextStyle(color: Colors.white54, fontSize: 12)),
             onTap: () {
               showDialog(
                 context: context,
                 builder: (_) => AlertDialog(
                   backgroundColor: Colors.grey[900],
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                  title: const Row(
+                  title: Row(
                     children: [
-                      Icon(Icons.security, color: Colors.white),
-                      SizedBox(width: 8),
-                      Text('Proxy & Tor', style: TextStyle(color: Colors.white)),
+                      const Icon(Icons.security, color: Colors.white),
+                      const SizedBox(width: 8),
+                      Text(t.proxyTitle, style: const TextStyle(color: Colors.white)),
                     ],
                   ),
-                  content: const Text(
-                    'This feature is under construction.\n\nSoon you will be able to use your own proxy or connect through Tor for enhanced anonymity and censorship bypass.',
-                    style: TextStyle(color: Colors.white70, fontSize: 14),
-                  ),
+                  content: Text(t.proxyDialogDesc, style: const TextStyle(color: Colors.white70, fontSize: 14)),
                   actions: [
                     TextButton(
                       onPressed: () => Navigator.pop(context),
-                      child: const Text('Got it', style: TextStyle(color: Colors.blueAccent)),
+                      child: Text('Got it', style: const TextStyle(color: Colors.blueAccent)),
                     ),
                   ],
                 ),
@@ -237,11 +218,10 @@ class ProfileScreen extends StatelessWidget {
             trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.white38),
           ),
 
-          
           ListTile(
             leading: const Icon(Icons.verified_user, color: Colors.white),
-            title: const Text('Request Verification', style: TextStyle(color: Colors.white)),
-            subtitle: const Text('Apply for the blue checkmark', style: TextStyle(color: Colors.white54, fontSize: 12)),
+            title: Text(t.requestVerification, style: const TextStyle(color: Colors.white)),
+            subtitle: Text(t.requestVerificationDesc, style: const TextStyle(color: Colors.white54, fontSize: 12)),
             onTap: () {
               showModalBottomSheet(
                 context: context,
@@ -254,11 +234,11 @@ class ProfileScreen extends StatelessWidget {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Text('Choose Verification Type', style: TextStyle(color: Colors.white, fontSize: 18)),
+                      Text(t.chooseVerificationType, style: const TextStyle(color: Colors.white, fontSize: 18)),
                       const SizedBox(height: 16),
                       ListTile(
                         leading: const Icon(Icons.person, color: Colors.white),
-                        title: const Text('Personal Identity', style: TextStyle(color: Colors.white)),
+                        title: Text(t.personalIdentity, style: const TextStyle(color: Colors.white)),
                         onTap: () {
                           Navigator.pop(context);
                           context.push('/verify/personal');
@@ -266,7 +246,7 @@ class ProfileScreen extends StatelessWidget {
                       ),
                       ListTile(
                         leading: const Icon(Icons.business, color: Colors.white),
-                        title: const Text('Business/Organization', style: TextStyle(color: Colors.white)),
+                        title: Text(t.businessOrganization, style: const TextStyle(color: Colors.white)),
                         onTap: () {
                           Navigator.pop(context);
                           context.push('/verify/business');
@@ -426,7 +406,7 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  void _showEditBioDialog(BuildContext context) {
+  void _showEditBioDialog(BuildContext context, AppLocalizations t) {
     final profile = context.read<ProfileProvider>();
     final controller = TextEditingController(text: profile.bio);
 
@@ -447,21 +427,14 @@ class ProfileScreen extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text(
-              'Edit Bio',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: Colors.white,
-              ),
-            ),
+            Text(t.editBio, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.white)),
             const SizedBox(height: 16),
             TextField(
               controller: controller,
               maxLines: 4,
               style: const TextStyle(color: Colors.white),
               decoration: InputDecoration(
-                hintText: 'Write something fun or meaningful...',
+                hintText: t.editBioHint,
                 hintStyle: const TextStyle(color: Colors.white38),
                 filled: true,
                 fillColor: Colors.grey[850],
@@ -487,7 +460,7 @@ class ProfileScreen extends StatelessWidget {
                   }
                 },
                 icon: const Icon(Icons.edit, color: Colors.black),
-                label: const Text('Save', style: TextStyle(color: Colors.black)),
+                label: Text(t.save, style: const TextStyle(color: Colors.black)),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),

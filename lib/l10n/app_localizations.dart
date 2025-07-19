@@ -100,93 +100,237 @@ abstract class AppLocalizations {
 
   /// No description provided for @profile.
   ///
-  /// In en, this message translates to:
-  /// **'Profile'**
+  /// In ru, this message translates to:
+  /// **'Профиль'**
   String get profile;
 
   /// No description provided for @changeLanguage.
   ///
-  /// In en, this message translates to:
-  /// **'Change Language'**
+  /// In ru, this message translates to:
+  /// **'Сменить язык'**
   String get changeLanguage;
 
   /// No description provided for @changePassword.
   ///
-  /// In en, this message translates to:
-  /// **'Change Password'**
+  /// In ru, this message translates to:
+  /// **'Сменить пароль'**
   String get changePassword;
 
   /// No description provided for @currentPassword.
   ///
-  /// In en, this message translates to:
-  /// **'Current Password'**
+  /// In ru, this message translates to:
+  /// **'Текущий пароль'**
   String get currentPassword;
 
   /// No description provided for @newPassword.
   ///
-  /// In en, this message translates to:
-  /// **'New Password'**
+  /// In ru, this message translates to:
+  /// **'Новый пароль'**
   String get newPassword;
 
   /// No description provided for @cancel.
   ///
-  /// In en, this message translates to:
-  /// **'Cancel'**
+  /// In ru, this message translates to:
+  /// **'Отмена'**
   String get cancel;
 
   /// No description provided for @change.
   ///
-  /// In en, this message translates to:
-  /// **'Change'**
+  /// In ru, this message translates to:
+  /// **'Изменить'**
   String get change;
 
   /// No description provided for @passwordUpdated.
   ///
-  /// In en, this message translates to:
-  /// **'Password updated'**
+  /// In ru, this message translates to:
+  /// **'Пароль обновлён'**
   String get passwordUpdated;
 
   /// No description provided for @wrongPassword.
   ///
-  /// In en, this message translates to:
-  /// **'Wrong current password'**
+  /// In ru, this message translates to:
+  /// **'Неверный текущий пароль'**
   String get wrongPassword;
 
   /// No description provided for @logout.
   ///
-  /// In en, this message translates to:
-  /// **'Logout'**
+  /// In ru, this message translates to:
+  /// **'Выйти'**
   String get logout;
 
   /// No description provided for @about.
   ///
-  /// In en, this message translates to:
-  /// **'About Us'**
+  /// In ru, this message translates to:
+  /// **'О нас'**
   String get about;
 
   /// No description provided for @aboutDescription.
   ///
-  /// In en, this message translates to:
-  /// **'This is a secure chat application developed with end-to-end encryption.'**
+  /// In ru, this message translates to:
+  /// **'Это защищённое чат-приложение с сквозным шифрованием.'**
   String get aboutDescription;
 
   /// No description provided for @privacy.
   ///
-  /// In en, this message translates to:
-  /// **'Privacy Policy'**
+  /// In ru, this message translates to:
+  /// **'Политика конфиденциальности'**
   String get privacy;
 
   /// No description provided for @privacyDescription.
   ///
-  /// In en, this message translates to:
-  /// **'Secure Chat is a privacy-first communication platform developed by Hacker Atyrau — an elite team from Kazakhstan dedicated to cybersecurity, privacy engineering, and ethical communication technologies.\n\nWe do not collect, sell, or share your personal data. All messages are end-to-end encrypted using industry-standard cryptographic algorithms. Even our developers cannot access your private conversations.\n\n🔒 Every chat is stored encrypted.\n🕵️ No ads, no trackers, no profiling.\n🛡️ Open-source transparency and code audits.\n\nThis project was built under the mission of making Kazakhstan a global leader in secure digital communication. Hacker Atyrau is committed to defending your right to freedom, privacy, and secure expression in the digital age.\n\nWe are not just a messenger.\nWe are a movement for digital dignity.\n\n© 2025 Hacker Atyrau Team\nAll rights reserved.'**
+  /// In ru, this message translates to:
+  /// **'Secure Chat — это защищённый мессенджер, разработанный командой Hacker Атырау — ведущими специалистами Казахстана в области кибербезопасности и приватных технологий.\n\nМы не собираем ваши личные данные. Все сообщения зашифрованы сквозным шифрованием (end-to-end) и недоступны даже для наших разработчиков.\n\n🔒 Все чаты хранятся в зашифрованном виде.\n🕵️ Отсутствуют рекламные трекеры, сбор аналитики и слежка.\n🛡️ Код прозрачен и поддаётся внешнему аудиту.\n\nПроект создан с целью сделать Казахстан мировым лидером в области цифровой безопасности. Hacker Атырау — это не просто разработчики, это движение за цифровую свободу и достоинство.\n\nМы не просто мессенджер.\nМы — щит вашей цифровой личности.\n\n© 2025 Hacker Атырау\nВсе права защищены.'**
   String get privacyDescription;
 
   /// No description provided for @ok.
   ///
-  /// In en, this message translates to:
-  /// **'OK'**
+  /// In ru, this message translates to:
+  /// **'ОК'**
   String get ok;
+
+  /// No description provided for @changeAvatar.
+  ///
+  /// In ru, this message translates to:
+  /// **'Изменить аватар'**
+  String get changeAvatar;
+
+  /// No description provided for @aboutMe.
+  ///
+  /// In ru, this message translates to:
+  /// **'О себе'**
+  String get aboutMe;
+
+  /// No description provided for @noBioYet.
+  ///
+  /// In ru, this message translates to:
+  /// **'Биография не указана'**
+  String get noBioYet;
+
+  /// No description provided for @editBio.
+  ///
+  /// In ru, this message translates to:
+  /// **'Редактировать биографию'**
+  String get editBio;
+
+  /// No description provided for @editBioHint.
+  ///
+  /// In ru, this message translates to:
+  /// **'Напишите что-нибудь интересное или осмысленное...'**
+  String get editBioHint;
+
+  /// No description provided for @save.
+  ///
+  /// In ru, this message translates to:
+  /// **'Сохранить'**
+  String get save;
+
+  /// No description provided for @offlineCommunication.
+  ///
+  /// In ru, this message translates to:
+  /// **'Офлайн-связь'**
+  String get offlineCommunication;
+
+  /// No description provided for @offlineCommunicationDesc.
+  ///
+  /// In ru, this message translates to:
+  /// **'Шифрованные сообщения без интернета'**
+  String get offlineCommunicationDesc;
+
+  /// No description provided for @offlineChatTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Офлайн-чат'**
+  String get offlineChatTitle;
+
+  /// No description provided for @offlineChatDesc.
+  ///
+  /// In ru, this message translates to:
+  /// **'Эта функция в разработке.\n\nСкоро вы сможете отправлять и получать зашифрованные сообщения даже без интернета с помощью Bluetooth или mesh-сети.'**
+  String get offlineChatDesc;
+
+  /// No description provided for @vpn.
+  ///
+  /// In ru, this message translates to:
+  /// **'Встроенный VPN'**
+  String get vpn;
+
+  /// No description provided for @vpnDesc.
+  ///
+  /// In ru, this message translates to:
+  /// **'Защитите трафик через встроенный VPN'**
+  String get vpnDesc;
+
+  /// No description provided for @vpnTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'VPN-модуль'**
+  String get vpnTitle;
+
+  /// No description provided for @vpnDialogDesc.
+  ///
+  /// In ru, this message translates to:
+  /// **'Функция безопасного VPN скоро появится.\n\nВы сможете перенаправлять весь трафик через зашифрованный туннель для максимальной конфиденциальности.'**
+  String get vpnDialogDesc;
+
+  /// No description provided for @proxy.
+  ///
+  /// In ru, this message translates to:
+  /// **'Настройки прокси'**
+  String get proxy;
+
+  /// No description provided for @proxyDesc.
+  ///
+  /// In ru, this message translates to:
+  /// **'Поддержка собственного прокси или Tor'**
+  String get proxyDesc;
+
+  /// No description provided for @proxyTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Прокси и Tor'**
+  String get proxyTitle;
+
+  /// No description provided for @proxyDialogDesc.
+  ///
+  /// In ru, this message translates to:
+  /// **'Эта функция в разработке.\n\nСкоро вы сможете использовать собственный прокси или подключаться через Tor для анонимности и обхода цензуры.'**
+  String get proxyDialogDesc;
+
+  /// No description provided for @requestVerification.
+  ///
+  /// In ru, this message translates to:
+  /// **'Запросить верификацию'**
+  String get requestVerification;
+
+  /// No description provided for @requestVerificationDesc.
+  ///
+  /// In ru, this message translates to:
+  /// **'Подайте заявку на значок подтверждения'**
+  String get requestVerificationDesc;
+
+  /// No description provided for @chooseVerificationType.
+  ///
+  /// In ru, this message translates to:
+  /// **'Выберите тип верификации'**
+  String get chooseVerificationType;
+
+  /// No description provided for @personalIdentity.
+  ///
+  /// In ru, this message translates to:
+  /// **'Личная личность'**
+  String get personalIdentity;
+
+  /// No description provided for @businessOrganization.
+  ///
+  /// In ru, this message translates to:
+  /// **'Бизнес / Организация'**
+  String get businessOrganization;
+
+  /// No description provided for @sendResetEmail.
+  ///
+  /// In ru, this message translates to:
+  /// **'Отправить письмо для сброса'**
+  String get sendResetEmail;
 }
 
 class _AppLocalizationsDelegate

@@ -54,4 +54,79 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get ok => 'OK';
+
+  @override
+  String get changeAvatar => 'Change avatar';
+
+  @override
+  String get aboutMe => 'About Me';
+
+  @override
+  String get noBioYet => 'No bio yet';
+
+  @override
+  String get editBio => 'Edit Bio';
+
+  @override
+  String get editBioHint => 'Write something fun or meaningful...';
+
+  @override
+  String get save => 'Save';
+
+  @override
+  String get offlineCommunication => 'Offline Communication';
+
+  @override
+  String get offlineCommunicationDesc => 'Encrypted messaging without internet';
+
+  @override
+  String get offlineChatTitle => 'Offline Chat';
+
+  @override
+  String get offlineChatDesc =>
+      'This feature is under development.\n\nYou will soon be able to send and receive encrypted messages even without internet using Bluetooth or mesh network.';
+
+  @override
+  String get vpn => 'Built-in VPN';
+
+  @override
+  String get vpnDesc => 'Protect your traffic using integrated VPN';
+
+  @override
+  String get vpnTitle => 'VPN Module';
+
+  @override
+  String get vpnDialogDesc =>
+      'Our secure VPN feature is coming soon.\n\nYou’ll be able to route all your traffic through encrypted tunnels to stay private and secure.';
+
+  @override
+  String get proxy => 'Proxy Settings';
+
+  @override
+  String get proxyDesc => 'Custom proxy or Tor support';
+
+  @override
+  String get proxyTitle => 'Proxy & Tor';
+
+  @override
+  String get proxyDialogDesc =>
+      'This feature is under construction.\n\nSoon you will be able to use your own proxy or connect through Tor for enhanced anonymity and censorship bypass.';
+
+  @override
+  String get requestVerification => 'Request Verification';
+
+  @override
+  String get requestVerificationDesc => 'Apply for the blue checkmark';
+
+  @override
+  String get chooseVerificationType => 'Choose Verification Type';
+
+  @override
+  String get personalIdentity => 'Personal Identity';
+
+  @override
+  String get businessOrganization => 'Business/Organization';
+
+  @override
+  String get sendResetEmail => 'Send Reset Email';
 }

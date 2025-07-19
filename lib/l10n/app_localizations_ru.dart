@@ -54,4 +54,80 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get ok => 'ОК';
+
+  @override
+  String get changeAvatar => 'Изменить аватар';
+
+  @override
+  String get aboutMe => 'О себе';
+
+  @override
+  String get noBioYet => 'Биография не указана';
+
+  @override
+  String get editBio => 'Редактировать биографию';
+
+  @override
+  String get editBioHint => 'Напишите что-нибудь интересное или осмысленное...';
+
+  @override
+  String get save => 'Сохранить';
+
+  @override
+  String get offlineCommunication => 'Офлайн-связь';
+
+  @override
+  String get offlineCommunicationDesc => 'Шифрованные сообщения без интернета';
+
+  @override
+  String get offlineChatTitle => 'Офлайн-чат';
+
+  @override
+  String get offlineChatDesc =>
+      'Эта функция в разработке.\n\nСкоро вы сможете отправлять и получать зашифрованные сообщения даже без интернета с помощью Bluetooth или mesh-сети.';
+
+  @override
+  String get vpn => 'Встроенный VPN';
+
+  @override
+  String get vpnDesc => 'Защитите трафик через встроенный VPN';
+
+  @override
+  String get vpnTitle => 'VPN-модуль';
+
+  @override
+  String get vpnDialogDesc =>
+      'Функция безопасного VPN скоро появится.\n\nВы сможете перенаправлять весь трафик через зашифрованный туннель для максимальной конфиденциальности.';
+
+  @override
+  String get proxy => 'Настройки прокси';
+
+  @override
+  String get proxyDesc => 'Поддержка собственного прокси или Tor';
+
+  @override
+  String get proxyTitle => 'Прокси и Tor';
+
+  @override
+  String get proxyDialogDesc =>
+      'Эта функция в разработке.\n\nСкоро вы сможете использовать собственный прокси или подключаться через Tor для анонимности и обхода цензуры.';
+
+  @override
+  String get requestVerification => 'Запросить верификацию';
+
+  @override
+  String get requestVerificationDesc =>
+      'Подайте заявку на значок подтверждения';
+
+  @override
+  String get chooseVerificationType => 'Выберите тип верификации';
+
+  @override
+  String get personalIdentity => 'Личная личность';
+
+  @override
+  String get businessOrganization => 'Бизнес / Организация';
+
+  @override
+  String get sendResetEmail => 'Отправить письмо для сброса';
 }
