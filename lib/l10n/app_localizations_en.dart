@@ -206,4 +206,102 @@ class AppLocalizationsEn extends AppLocalizations {
   String emailSentDesc(Object email) {
     return 'A verification email has been sent to:\n\n$email\n\nPlease check your inbox or spam folder before logging in.';
   }
+
+  @override
+  String get chats => 'Chats';
+
+  @override
+  String get stories => 'Stories';
+
+  @override
+  String get groups => 'Groups';
+
+  @override
+  String get noChats => 'No secure chats yet';
+
+  @override
+  String get inDevelopment => 'In Development';
+
+  @override
+  String get noGroups => 'No groups yet';
+
+  @override
+  String membersCount(Object count) {
+    return 'Members: $count';
+  }
+
+  @override
+  String get findUser => 'Find user';
+
+  @override
+  String get createGroup => 'Create group';
+
+  @override
+  String get createGroupTitle => 'Create Group';
+
+  @override
+  String get groupNameHint => 'Group name';
+
+  @override
+  String get groupCreationError => 'Failed to create group';
+
+  @override
+  String get contactBlocked => 'Contact is blocked';
+
+  @override
+  String get contactUnblocked => 'Contact is unblocked';
+
+  @override
+  String get deleteChat => 'Delete chat';
+
+  @override
+  String get areYouSure => 'Are you sure?';
+
+  @override
+  String get changeDecryption => 'Change decryption';
+
+  @override
+  String get pinChat => 'Pin chat';
+
+  @override
+  String get unpinChat => 'Chat unpinned';
+
+  @override
+  String get chatPinned => 'Chat pinned';
+
+  @override
+  String get featureInDev => 'Feature in development';
+
+  @override
+  String get delete => 'Delete';
+
+  @override
+  String get chooseDecryption => 'Choose decryption type';
+
+  @override
+  String get justNow => 'just now';
+
+  @override
+  String minutesAgo(Object minutes) {
+    return '$minutes min ago';
+  }
+
+  @override
+  String hoursAgo(Object hours) {
+    return '$hours h ago';
+  }
+
+  @override
+  String daysAgo(Object days) {
+    return '$days d ago';
+  }
+
+  @override
+  String get offline => 'Offline';
+
+  @override
+  String get online => 'Online';
+
+  @override
+  String get algorithm => 'Algorithm';
 }

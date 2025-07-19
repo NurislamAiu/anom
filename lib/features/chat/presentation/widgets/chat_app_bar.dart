@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../providers/auth_provider.dart';
 import '../../../../providers/block_provider.dart';
 import '../../../../providers/chat_provider.dart';
@@ -21,6 +22,7 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context)!;
     final auth = context.read<AuthProvider>();
     final currentUser = auth.username!;
     final otherUser = chatId.split('_').firstWhere((u) => u != currentUser);
@@ -96,7 +98,7 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
                 future: getUidByUsername(otherUser),
                 builder: (context, uidSnapshot) {
                   if (!uidSnapshot.hasData) {
-                    return const Text('Offline', style: TextStyle(color: Colors.grey, fontSize: 12));
+                    return Text(t.offline, style: TextStyle(color: Colors.grey, fontSize: 12));
                   }
                   final uid = uidSnapshot.data!;
                   return StreamBuilder<DocumentSnapshot>(
@@ -106,7 +108,7 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
                         .snapshots(),
                     builder: (context, snapshot) {
                       if (!snapshot.hasData) {
-                        return const Text('Offline', style: TextStyle(color: Colors.grey, fontSize: 12));
+                        return  Text(t.offline, style: TextStyle(color: Colors.grey, fontSize: 12));
                       }
 
                       final data = snapshot.data!.data() as Map<String, dynamic>?;
@@ -115,10 +117,10 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
 
                       return Text(
                         isOnline
-                            ? 'Online'
+                            ? t.online
                             : lastSeen != null
                             ? 'Last seen ${_timeAgo(lastSeen)}'
-                            : 'Offline',
+                            : t.offline,
                         style: TextStyle(
                           fontSize: 12,
                           color: isOnline ? Colors.greenAccent : Colors.grey,
@@ -138,7 +140,7 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
           onPressed: () {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: const Text('Функция в разработке'),
+                content: Text(t.inDevelopment),
                 backgroundColor: Colors.grey[850],
               ),
             );
@@ -156,27 +158,21 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
             PopupMenuItem(
               value: isBlocked ? 'unblock' : 'block',
               child: Text(
-                isBlocked ? 'Разблокировать контакт' : 'Заблокировать контакт',
+                isBlocked ? t.contactUnblocked : t.contactBlocked,
                 style: const TextStyle(color: Colors.white),
               ),
             ),
-            const PopupMenuItem(
+            PopupMenuItem(
               value: 'delete',
-              child: Text('Удалить чат', style: TextStyle(color: Colors.white)),
+              child: Text(t.deleteChat, style: const TextStyle(color: Colors.white)),
             ),
-            const PopupMenuItem(
+            PopupMenuItem(
               value: 'decrypt',
-              child: Text(
-                'Изменить расшифровку',
-                style: TextStyle(color: Colors.white),
-              ),
+              child: Text(t.changeDecryption, style: const TextStyle(color: Colors.white)),
             ),
-            const PopupMenuItem(
+            PopupMenuItem(
               value: 'pin',
-              child: Text(
-                'Закрепить чат',
-                style: TextStyle(color: Colors.white),
-              ),
+              child: Text(t.pinChat, style: const TextStyle(color: Colors.white)),
             ),
           ],
         ),
@@ -247,6 +243,7 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   static String _timeAgo(DateTime date) {
+
     final diff = DateTime.now().difference(date);
     if (diff.inSeconds < 60) return 'только что';
     if (diff.inMinutes < 60) return '${diff.inMinutes} мин назад';
@@ -262,21 +259,22 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
   ) async {
     final block = context.read<BlockProvider>();
     final chat = context.read<ChatProvider>();
+    final t = AppLocalizations.of(context)!;
 
     switch (value) {
       case 'block':
         await block.blockUser(otherUser);
-        _showSnack(context, 'Контакт заблокирован');
+        _showSnack(context, t.contactBlocked);
         break;
       case 'unblock':
         await block.unblockUser(otherUser);
-        _showSnack(context, 'Контакт разблокирован');
+        _showSnack(context, t.contactUnblocked);
         break;
       case 'delete':
         final confirm = await _confirmDialog(
           context,
-          'Удалить чат',
-          'Вы уверены?',
+          t.deleteChat,
+          t.areYouSure,
         );
         if (!confirm) return;
         await chat.deleteChat(chatId);
@@ -286,7 +284,7 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
         final algo = await _chooseDecryption(context);
         if (algo != null) {
           await chat.updateEncryption(chatId, algo);
-          _showSnack(context, 'Алгоритм: $algo');
+          _showSnack(context, '${t.algorithm}: $algo');
         }
         break;
       case 'pin':
@@ -294,7 +292,7 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
             chat.userChats.firstWhere((c) => c['chatId'] == chatId)['pinned'] ==
             true;
         await chat.togglePin(chatId, !isPinned);
-        _showSnack(context, isPinned ? 'Чат откреплён' : 'Чат закреплён');
+        _showSnack(context, isPinned ? t.unpinChat : t.chatPinned);
         break;
     }
   }
@@ -315,6 +313,7 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
     String title,
     String message,
   ) async {
+    final t = AppLocalizations.of(context)!;
     return await showDialog<bool>(
           context: context,
           builder: (_) => AlertDialog(
@@ -327,11 +326,11 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context, false),
-                child: const Text('Отмена'),
+                child: Text(t.cancel),
               ),
               TextButton(
                 onPressed: () => Navigator.pop(context, true),
-                child: const Text('Удалить'),
+                child: Text(t.delete),
               ),
             ],
           ),
@@ -340,6 +339,8 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   Future<String?> _chooseDecryption(BuildContext context) async {
+
+    final t = AppLocalizations.of(context)!;
     return await showModalBottomSheet<String>(
       context: context,
       backgroundColor: Colors.grey[900],
@@ -351,11 +352,11 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
         return Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Padding(
+            Padding(
               padding: EdgeInsets.symmetric(vertical: 16),
               child: Text(
-                'Выберите тип расшифровки',
-                style: TextStyle(color: Colors.white70, fontSize: 16),
+                t.chooseDecryption,
+                style: const TextStyle(color: Colors.white70, fontSize: 16),
               ),
             ),
             ...options.map(

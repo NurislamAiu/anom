@@ -10,6 +10,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../providers/auth_provider.dart';
 import '../../../../providers/chat_provider.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../providers/block_provider.dart';
 import '../../../providers/search_provider.dart';
 
@@ -51,6 +52,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     final messages = context.watch<ChatProvider>().messages;
+    final t = AppLocalizations.of(context)!;
     final isBlocked = context.watch<BlockProvider>().isBlocked(
       widget.chatId.split('_').firstWhere((u) => u != currentUser),
     );
@@ -69,12 +71,12 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
               padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
+                children: [
                   Icon(Icons.block, color: Colors.redAccent, size: 18),
                   SizedBox(width: 8),
                   Text(
-                    'Контакт заблокирован',
-                    style: TextStyle(color: Colors.redAccent, fontSize: 14),
+                    t.contactBlocked,
+                    style: const TextStyle(color: Colors.redAccent, fontSize: 14),
                   ),
                 ],
               ),

@@ -137,7 +137,7 @@ abstract class AppLocalizations {
   /// No description provided for @change.
   ///
   /// In ru, this message translates to:
-  /// **'Изменить'**
+  /// **'Сменить'**
   String get change;
 
   /// No description provided for @passwordUpdated.
@@ -167,7 +167,7 @@ abstract class AppLocalizations {
   /// No description provided for @aboutDescription.
   ///
   /// In ru, this message translates to:
-  /// **'Это защищённое чат-приложение с сквозным шифрованием.'**
+  /// **'Это безопасное чат-приложение с шифрованием от конца до конца.'**
   String get aboutDescription;
 
   /// No description provided for @privacy.
@@ -179,7 +179,7 @@ abstract class AppLocalizations {
   /// No description provided for @privacyDescription.
   ///
   /// In ru, this message translates to:
-  /// **'Secure Chat — это защищённый мессенджер, разработанный командой Hacker Атырау — ведущими специалистами Казахстана в области кибербезопасности и приватных технологий.\n\nМы не собираем ваши личные данные. Все сообщения зашифрованы сквозным шифрованием (end-to-end) и недоступны даже для наших разработчиков.\n\n🔒 Все чаты хранятся в зашифрованном виде.\n🕵️ Отсутствуют рекламные трекеры, сбор аналитики и слежка.\n🛡️ Код прозрачен и поддаётся внешнему аудиту.\n\nПроект создан с целью сделать Казахстан мировым лидером в области цифровой безопасности. Hacker Атырау — это не просто разработчики, это движение за цифровую свободу и достоинство.\n\nМы не просто мессенджер.\nМы — щит вашей цифровой личности.\n\n© 2025 Hacker Атырау\nВсе права защищены.'**
+  /// **'Secure Chat — это ориентированная на приватность платформа связи, разработанная Hacker Atyrau — элитной командой из Казахстана, специализирующейся на кибербезопасности, инженерии приватности и этичных коммуникационных технологиях.\n\nМы не собираем, не продаём и не передаём ваши персональные данные. Все сообщения зашифрованы по стандартам индустрии. Даже наши разработчики не имеют доступа к вашим приватным перепискам.\n\n🔒 Все чаты хранятся в зашифрованном виде.\n🕵️ Без рекламы, трекеров и профилирования.\n🛡️ Прозрачный открытый исходный код и аудит безопасности.\n\nЭтот проект создан с целью сделать Казахстан мировым лидером в области безопасной цифровой связи. Команда Hacker Atyrau защищает ваше право на свободу, конфиденциальность и безопасное самовыражение в цифровую эпоху.\n\nМы не просто мессенджер.\nМы — движение за цифровое достоинство.\n\n© 2025 Команда Hacker Atyrau\nВсе права защищены.'**
   String get privacyDescription;
 
   /// No description provided for @ok.
@@ -191,7 +191,7 @@ abstract class AppLocalizations {
   /// No description provided for @changeAvatar.
   ///
   /// In ru, this message translates to:
-  /// **'Изменить аватар'**
+  /// **'Сменить аватар'**
   String get changeAvatar;
 
   /// No description provided for @aboutMe.
@@ -203,19 +203,19 @@ abstract class AppLocalizations {
   /// No description provided for @noBioYet.
   ///
   /// In ru, this message translates to:
-  /// **'Биография не указана'**
+  /// **'Биография отсутствует'**
   String get noBioYet;
 
   /// No description provided for @editBio.
   ///
   /// In ru, this message translates to:
-  /// **'Редактировать биографию'**
+  /// **'Редактировать био'**
   String get editBio;
 
   /// No description provided for @editBioHint.
   ///
   /// In ru, this message translates to:
-  /// **'Напишите что-нибудь интересное или осмысленное...'**
+  /// **'Напишите что-то интересное или значимое...'**
   String get editBioHint;
 
   /// No description provided for @save.
@@ -233,7 +233,7 @@ abstract class AppLocalizations {
   /// No description provided for @offlineCommunicationDesc.
   ///
   /// In ru, this message translates to:
-  /// **'Шифрованные сообщения без интернета'**
+  /// **'Зашифрованная переписка без интернета'**
   String get offlineCommunicationDesc;
 
   /// No description provided for @offlineChatTitle.
@@ -245,7 +245,7 @@ abstract class AppLocalizations {
   /// No description provided for @offlineChatDesc.
   ///
   /// In ru, this message translates to:
-  /// **'Эта функция в разработке.\n\nСкоро вы сможете отправлять и получать зашифрованные сообщения даже без интернета с помощью Bluetooth или mesh-сети.'**
+  /// **'Функция в разработке.\n\nСкоро вы сможете отправлять и получать зашифрованные сообщения даже без интернета через Bluetooth или mesh-сеть.'**
   String get offlineChatDesc;
 
   /// No description provided for @vpn.
@@ -257,7 +257,7 @@ abstract class AppLocalizations {
   /// No description provided for @vpnDesc.
   ///
   /// In ru, this message translates to:
-  /// **'Защитите трафик через встроенный VPN'**
+  /// **'Защитите трафик с помощью встроенного VPN'**
   String get vpnDesc;
 
   /// No description provided for @vpnTitle.
@@ -269,7 +269,7 @@ abstract class AppLocalizations {
   /// No description provided for @vpnDialogDesc.
   ///
   /// In ru, this message translates to:
-  /// **'Функция безопасного VPN скоро появится.\n\nВы сможете перенаправлять весь трафик через зашифрованный туннель для максимальной конфиденциальности.'**
+  /// **'Наша функция безопасного VPN скоро будет доступна.\n\nВы сможете перенаправить весь трафик через зашифрованные каналы для приватности и безопасности.'**
   String get vpnDialogDesc;
 
   /// No description provided for @proxy.
@@ -281,7 +281,7 @@ abstract class AppLocalizations {
   /// No description provided for @proxyDesc.
   ///
   /// In ru, this message translates to:
-  /// **'Поддержка собственного прокси или Tor'**
+  /// **'Поддержка прокси или Tor'**
   String get proxyDesc;
 
   /// No description provided for @proxyTitle.
@@ -293,7 +293,7 @@ abstract class AppLocalizations {
   /// No description provided for @proxyDialogDesc.
   ///
   /// In ru, this message translates to:
-  /// **'Эта функция в разработке.\n\nСкоро вы сможете использовать собственный прокси или подключаться через Tor для анонимности и обхода цензуры.'**
+  /// **'Функция в разработке.\n\nСкоро вы сможете использовать собственный прокси или подключаться через Tor для повышения анонимности и обхода цензуры.'**
   String get proxyDialogDesc;
 
   /// No description provided for @requestVerification.
@@ -305,7 +305,7 @@ abstract class AppLocalizations {
   /// No description provided for @requestVerificationDesc.
   ///
   /// In ru, this message translates to:
-  /// **'Подайте заявку на значок подтверждения'**
+  /// **'Подать заявку на синюю галочку'**
   String get requestVerificationDesc;
 
   /// No description provided for @chooseVerificationType.
@@ -317,13 +317,13 @@ abstract class AppLocalizations {
   /// No description provided for @personalIdentity.
   ///
   /// In ru, this message translates to:
-  /// **'Личная личность'**
+  /// **'Личность'**
   String get personalIdentity;
 
   /// No description provided for @businessOrganization.
   ///
   /// In ru, this message translates to:
-  /// **'Бизнес / Организация'**
+  /// **'Бизнес/Организация'**
   String get businessOrganization;
 
   /// No description provided for @sendResetEmail.
@@ -341,7 +341,7 @@ abstract class AppLocalizations {
   /// No description provided for @loginSubtitle.
   ///
   /// In ru, this message translates to:
-  /// **'Войдите, чтобы продолжить безопасный чат'**
+  /// **'Войдите, чтобы продолжить безопасные чаты'**
   String get loginSubtitle;
 
   /// No description provided for @emailOrUsername.
@@ -365,7 +365,7 @@ abstract class AppLocalizations {
   /// No description provided for @forgotPasswordDialog.
   ///
   /// In ru, this message translates to:
-  /// **'Чтобы сбросить пароль, пожалуйста, напишите нам на почту:\n\nсyberwest.kz@gmail.com\n\nВаши личные данные останутся защищёнными и конфиденциальными.'**
+  /// **'Чтобы сбросить пароль, отправьте письмо на адрес нашей поддержки:\n\nсyberwest.kz@gmail.com\n\nВаши данные останутся защищёнными и конфиденциальными.'**
   String get forgotPasswordDialog;
 
   /// No description provided for @login.
@@ -377,13 +377,13 @@ abstract class AppLocalizations {
   /// No description provided for @dontHaveAccount.
   ///
   /// In ru, this message translates to:
-  /// **'Нет аккаунта? Зарегистрируйтесь'**
+  /// **'Нет аккаунта? Зарегистрироваться'**
   String get dontHaveAccount;
 
   /// No description provided for @contactSupport.
   ///
   /// In ru, this message translates to:
-  /// **'Написать в поддержку'**
+  /// **'Связаться с поддержкой'**
   String get contactSupport;
 
   /// No description provided for @createAccount.
@@ -395,7 +395,7 @@ abstract class AppLocalizations {
   /// No description provided for @joinSubtitle.
   ///
   /// In ru, this message translates to:
-  /// **'Присоединяйтесь к самому безопасному мессенджеру'**
+  /// **'Присоединяйтесь к самому защищённому мессенджеру'**
   String get joinSubtitle;
 
   /// No description provided for @username.
@@ -407,7 +407,7 @@ abstract class AppLocalizations {
   /// No description provided for @email.
   ///
   /// In ru, this message translates to:
-  /// **'Эл. почта'**
+  /// **'Email'**
   String get email;
 
   /// No description provided for @confirmPassword.
@@ -449,13 +449,13 @@ abstract class AppLocalizations {
   /// No description provided for @confirmEmailTitle.
   ///
   /// In ru, this message translates to:
-  /// **'📧 Подтвердите почту'**
+  /// **'📧 Подтверждение Email'**
   String get confirmEmailTitle;
 
   /// No description provided for @confirmEmailDesc.
   ///
   /// In ru, this message translates to:
-  /// **'Вы действительно хотите зарегистрироваться с этой почтой?\n\n{email}'**
+  /// **'Вы действительно хотите зарегистрироваться с этим email?\n\n{email}'**
   String confirmEmailDesc(Object email);
 
   /// No description provided for @confirm.
@@ -473,8 +473,188 @@ abstract class AppLocalizations {
   /// No description provided for @emailSentDesc.
   ///
   /// In ru, this message translates to:
-  /// **'На адрес {email} отправлено письмо с подтверждением.\n\nПожалуйста, проверьте входящие или папку спам.'**
+  /// **'Письмо с подтверждением отправлено на:\n\n{email}\n\nПроверьте входящие или папку спам перед входом.'**
   String emailSentDesc(Object email);
+
+  /// No description provided for @chats.
+  ///
+  /// In ru, this message translates to:
+  /// **'Чаты'**
+  String get chats;
+
+  /// No description provided for @stories.
+  ///
+  /// In ru, this message translates to:
+  /// **'Истории'**
+  String get stories;
+
+  /// No description provided for @groups.
+  ///
+  /// In ru, this message translates to:
+  /// **'Группы'**
+  String get groups;
+
+  /// No description provided for @noChats.
+  ///
+  /// In ru, this message translates to:
+  /// **'Нет защищённых чатов'**
+  String get noChats;
+
+  /// No description provided for @inDevelopment.
+  ///
+  /// In ru, this message translates to:
+  /// **'В разработке'**
+  String get inDevelopment;
+
+  /// No description provided for @noGroups.
+  ///
+  /// In ru, this message translates to:
+  /// **'Групп ещё нет'**
+  String get noGroups;
+
+  /// No description provided for @membersCount.
+  ///
+  /// In ru, this message translates to:
+  /// **'Участники: {count}'**
+  String membersCount(Object count);
+
+  /// No description provided for @findUser.
+  ///
+  /// In ru, this message translates to:
+  /// **'Найти пользователя'**
+  String get findUser;
+
+  /// No description provided for @createGroup.
+  ///
+  /// In ru, this message translates to:
+  /// **'Создать группу'**
+  String get createGroup;
+
+  /// No description provided for @createGroupTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Создание группы'**
+  String get createGroupTitle;
+
+  /// No description provided for @groupNameHint.
+  ///
+  /// In ru, this message translates to:
+  /// **'Название группы'**
+  String get groupNameHint;
+
+  /// No description provided for @groupCreationError.
+  ///
+  /// In ru, this message translates to:
+  /// **'Ошибка при создании группы'**
+  String get groupCreationError;
+
+  /// No description provided for @contactBlocked.
+  ///
+  /// In ru, this message translates to:
+  /// **'Контакт заблокирован'**
+  String get contactBlocked;
+
+  /// No description provided for @contactUnblocked.
+  ///
+  /// In ru, this message translates to:
+  /// **'Контакт разблокирован'**
+  String get contactUnblocked;
+
+  /// No description provided for @deleteChat.
+  ///
+  /// In ru, this message translates to:
+  /// **'Удалить чат'**
+  String get deleteChat;
+
+  /// No description provided for @areYouSure.
+  ///
+  /// In ru, this message translates to:
+  /// **'Вы уверены?'**
+  String get areYouSure;
+
+  /// No description provided for @changeDecryption.
+  ///
+  /// In ru, this message translates to:
+  /// **'Изменить расшифровку'**
+  String get changeDecryption;
+
+  /// No description provided for @pinChat.
+  ///
+  /// In ru, this message translates to:
+  /// **'Закрепить чат'**
+  String get pinChat;
+
+  /// No description provided for @unpinChat.
+  ///
+  /// In ru, this message translates to:
+  /// **'Чат откреплён'**
+  String get unpinChat;
+
+  /// No description provided for @chatPinned.
+  ///
+  /// In ru, this message translates to:
+  /// **'Чат закреплён'**
+  String get chatPinned;
+
+  /// No description provided for @featureInDev.
+  ///
+  /// In ru, this message translates to:
+  /// **'Функция в разработке'**
+  String get featureInDev;
+
+  /// No description provided for @delete.
+  ///
+  /// In ru, this message translates to:
+  /// **'Удалить'**
+  String get delete;
+
+  /// No description provided for @chooseDecryption.
+  ///
+  /// In ru, this message translates to:
+  /// **'Выберите тип расшифровки'**
+  String get chooseDecryption;
+
+  /// No description provided for @justNow.
+  ///
+  /// In ru, this message translates to:
+  /// **'только что'**
+  String get justNow;
+
+  /// No description provided for @minutesAgo.
+  ///
+  /// In ru, this message translates to:
+  /// **'{minutes} мин назад'**
+  String minutesAgo(Object minutes);
+
+  /// No description provided for @hoursAgo.
+  ///
+  /// In ru, this message translates to:
+  /// **'{hours} ч назад'**
+  String hoursAgo(Object hours);
+
+  /// No description provided for @daysAgo.
+  ///
+  /// In ru, this message translates to:
+  /// **'{days} дн назад'**
+  String daysAgo(Object days);
+
+  /// No description provided for @offline.
+  ///
+  /// In ru, this message translates to:
+  /// **'Оффлайн'**
+  String get offline;
+
+  /// No description provided for @online.
+  ///
+  /// In ru, this message translates to:
+  /// **'Онлайн'**
+  String get online;
+
+  /// No description provided for @algorithm.
+  ///
+  /// In ru, this message translates to:
+  /// **'Алгоритм'**
+  String get algorithm;
 }
 
 class _AppLocalizationsDelegate

@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 
 import '../../../../providers/auth_provider.dart';
 import '../../../../providers/chat_provider.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../providers/group_provider.dart';
 import '../../../providers/profile_provider.dart';
 import '../../../providers/user_cache_provider.dart';
@@ -47,9 +48,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context)!;
     final chats = context.watch<ChatProvider>().userChats;
     final username = context.read<AuthProvider>().username ?? '';
-    final groups = context.watch<GroupChatProvider>().groups;
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -64,10 +65,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           indicatorColor: Colors.white,
           labelColor: Colors.white,
           unselectedLabelColor: Colors.white54,
-          tabs: const [
-            Tab(icon: Icon(Iconsax.chart), text: 'Chats'),
-            Tab(icon: Icon(Iconsax.camera), text: 'Stories'),
-            Tab(icon: Icon(Iconsax.people), text: 'Groups'),
+          tabs: [
+            Tab(icon: const Icon(Iconsax.chart), text: t.chats),
+            Tab(icon: const Icon(Iconsax.camera), text: t.stories),
+            Tab(icon: const Icon(Iconsax.people), text: t.groups),
           ],
         ),
         actions: [
@@ -106,17 +107,18 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   children: [
                     ListTile(
                       leading: const Icon(Iconsax.user, color: Colors.white),
-                      title: const Text(
-                        'Найти пользователя',
-                        style: TextStyle(color: Colors.white),
+                      title:
+                      Text(
+                        t.findUser,
+                        style: const TextStyle(color: Colors.white),
                       ),
                       onTap: () => Navigator.pop(context, 'search'),
                     ),
                     ListTile(
                       leading: const Icon(Iconsax.people, color: Colors.white),
-                      title: const Text(
-                        'Создать группу',
-                        style: TextStyle(color: Colors.white),
+                      title: Text(
+                        t.createGroup,
+                        style: const TextStyle(color: Colors.white),
                       ),
                       onTap: () => Navigator.pop(context, 'create_group'),
                     ),
@@ -140,10 +142,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         controller: _tabController,
         children: [
           chats.isEmpty
-              ? const Center(
+              ? Center(
                   child: Text(
-                    'No secure chats yet',
-                    style: TextStyle(color: Colors.grey),
+                    t.noChats,
+                    style: const TextStyle(color: Colors.grey),
                   ),
                 )
               : ListView.builder(
@@ -270,10 +272,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   },
                 ),
 
-          const Center(
+          Center(
             child: Text(
-              'В Разработке',
-              style: TextStyle(color: Colors.white54),
+              t.inDevelopment,
+              style: const TextStyle(color: Colors.white54),
             ),
           ),
 
@@ -281,10 +283,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             builder: (context, groupProvider, _) {
               final groups = groupProvider.groups;
               if (groups.isEmpty) {
-                return const Center(
+                return Center(
                   child: Text(
-                    'Групп ещё нет',
-                    style: TextStyle(color: Colors.white54),
+                    t.noGroups,
+                    style: const TextStyle(color: Colors.white54),
                   ),
                 );
               }
@@ -335,7 +337,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           ),
                         ),
                         subtitle: Text(
-                          'Участники: ${group.participants.length}',
+                          t.membersCount(group.participants.length),
                           style: const TextStyle(
                             color: Colors.white60,
                             fontSize: 13,
@@ -358,6 +360,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   void _showCreateGroupDialog(BuildContext context) {
     final nameController = TextEditingController();
+    final t = AppLocalizations.of(context)!;
     bool isLoading = false;
 
     showDialog(
@@ -380,14 +383,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Text(
-                      'Создание группы',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
+                    Text(
+                  t.createGroupTitle,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),),
                     const SizedBox(height: 20),
                     TextField(
                       controller: nameController,
@@ -395,7 +397,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       decoration: InputDecoration(
                         filled: true,
                         fillColor: Colors.white10,
-                        hintText: 'Название группы',
+                        hintText: t.groupNameHint,
                         hintStyle: const TextStyle(color: Colors.white38),
                         contentPadding: const EdgeInsets.symmetric(
                           horizontal: 16,
@@ -413,9 +415,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       children: [
                         TextButton(
                           onPressed: () => Navigator.pop(ctx),
-                          child: const Text(
-                            'Отмена',
-                            style: TextStyle(color: Colors.white60),
+                          child: Text(
+                            t.cancel,
+                            style: const TextStyle(color: Colors.white60),
                           ),
                         ),
                         const SizedBox(width: 12),
@@ -450,9 +452,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                   } catch (_) {
                                     setState(() => isLoading = false);
                                     ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
+                                      SnackBar(
                                         content: Text(
-                                          'Ошибка при создании группы',
+                                          t.groupCreationError,
                                         ),
                                         backgroundColor: Colors.redAccent,
                                       ),
@@ -479,7 +481,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                     color: Colors.black,
                                   ),
                                 )
-                              : const Text('Создать'),
+                              : Text(t.createGroup),
                         ),
                       ],
                     ),
