@@ -44,14 +44,10 @@ class ChatProvider extends ChangeNotifier {
       _messages = data;
 
       for (final msg in data) {
-        if (msg.status != 'read' && msg.sender != currentUser) {
-          await _chatService.updateMessageStatus(chatId, msg, 'read');
+        if (msg.sender != currentUser && msg.status != 'delivered' && msg.status != 'read') {
+          await _chatService.updateMessageStatus(chatId, msg, 'delivered');
         }
       }
-
-      await FirebaseFirestore.instance.collection('chats').doc(chatId).update({
-        'unreadBy': FieldValue.arrayRemove([currentUser]),
-      });
 
       notifyListeners();
     });
@@ -63,12 +59,16 @@ class ChatProvider extends ChangeNotifier {
     required String text,
   }) async {
     final msg = ChatMessage(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
       sender: sender,
       text: text,
       timestamp: DateTime.now(),
       status: 'sent',
-      id: '',
     );
+
+    _messages.add(msg);
+    notifyListeners();
+
     await _chatService.sendMessage(chatId, msg);
   }
 
